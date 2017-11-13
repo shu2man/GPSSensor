@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     private long startTime;
     private LatLng lastPoint;
     private List<LatLng> trackLatLngs;
+    private boolean isNeedRealTimeDraw=false;
     public Trace mTrace;
     public LBSTraceClient mTraceClient;
     public Polyline mPolyline;
@@ -160,12 +161,14 @@ public class MainActivity extends AppCompatActivity {
         mTraceClient.startGather(mTraceListener);// 开启采集
         startTime=System.currentTimeMillis()/1000;// 开始时间(单位：秒)
         endTime=0;
+        isNeedRealTimeDraw=true;
         //mLatestPoint();//实时更新、画出轨迹
     }
     public void stopTrace(){
         mTraceClient.stopTrace(mTrace,mTraceListener);// 停止服务
         mTraceClient.stopGather(mTraceListener);// 停止采集
         endTime=System.currentTimeMillis()/1000;// 结束时间(单位：秒)
+        isNeedRealTimeDraw=false;
         //mHistoryTrack();
     }
     //以上四个listener必须相同,或者在一开始mTraceClient.setOnTraceListener(mTraceListener)设置在此不用传入
@@ -234,11 +237,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            trackLatLngs.add(ll);
-            if(trackLatLngs.size()>=2) {
-                PolylineOptions ooPolyline = new PolylineOptions().width(10).color(0xAAFF0000).points(trackLatLngs);
-                mBaiduMap.clear();
-                mPolyline = (Polyline) mBaiduMap.addOverlay(ooPolyline);//显示当前位置，并时时动态的画出运动轨
+            if(isNeedRealTimeDraw) {
+                trackLatLngs.add(ll);
+                if (trackLatLngs.size() >= 2) {
+                    PolylineOptions ooPolyline = new PolylineOptions().width(10).color(0xAAFF0000).points(trackLatLngs);
+                    mBaiduMap.clear();
+                    mPolyline = (Polyline) mBaiduMap.addOverlay(ooPolyline);//显示当前位置，并时时动态的画出运动轨
+                }
             }
 
             /*
@@ -342,6 +347,9 @@ public class MainActivity extends AppCompatActivity {
             tv.setText("停止录制");
             ibtn.setBackgroundResource(R.drawable.trace_stop);
         }
+    }
+    public void setLocalDeviceInformation(View view){
+
     }
 
     public OnEntityListener entityListener=new OnEntityListener() {
