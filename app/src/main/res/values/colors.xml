@@ -5,4 +5,5 @@
     <color name="colorAccent">#576cb2</color>
     <color name="listbgc">#fefefe</color>
     <color name="hint_color">#cfc9d1d3</color>
+    <color name="blue_interaction">#4a73a9</color>
 </resources>
