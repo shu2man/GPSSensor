@@ -9,6 +9,7 @@ import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,7 +63,7 @@ import com.baidu.trace.model.TransportMode;
 
 public class MainActivity extends AppCompatActivity {
     private int tag=1;// 请求标识
-    private String entityName= Build.MODEL;
+    private String entityName="myTestTrace";
     private long serviceId=153058;
 
     private TextureMapView mMapView;
@@ -142,13 +143,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initTrace(){
-        entityName= Build.MODEL;
+        //entityName= Build.MODEL;
         serviceId=153058;
         lastPoint=new LatLng(113.394514,23.066745);
         trackLatLngs=new ArrayList<>();
         boolean isNeedObjectStorage=false;// 是否需要对象存储服务
         int gatherInterval=3;// 定位周期(单位:秒)
-        int packInterval=12;// 打包回传周期(单位:秒)
+        int packInterval=10;// 打包回传周期(单位:秒)
 
         mTrace=new Trace(serviceId,entityName,isNeedObjectStorage);
         mTraceClient=new LBSTraceClient(getApplicationContext());// 初始化轨迹服务客户端
@@ -349,7 +350,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     public void setLocalDeviceInformation(View view){
-
+        EditText et=(EditText)findViewById(R.id.search_edit_text);
+        if(et.getText().toString()!=null){
+            entityName=et.getText().toString();
+            initTrace();
+        }
     }
 
     public OnEntityListener entityListener=new OnEntityListener() {
@@ -394,9 +399,11 @@ public class MainActivity extends AppCompatActivity {
                         trackPoint.getLocation().getLongitude());
                 trackLatLngsOverall.add(latlng);
             }
-            OverlayOptions ooPolyline=new PolylineOptions().width(10).color(0xAAFF0000).points(trackLatLngsOverall);
-            mBaiduMap.clear();
-            mPolyline=(Polyline)mBaiduMap.addOverlay(ooPolyline);
+            if(trackLatLngsOverall.size()>=2){
+                OverlayOptions ooPolyline=new PolylineOptions().width(10).color(0xAAFF0000).points(trackLatLngsOverall);
+                mBaiduMap.clear();
+                mPolyline=(Polyline)mBaiduMap.addOverlay(ooPolyline);
+            }
         }
         @Override
         public void onDistanceCallback(DistanceResponse response){
@@ -422,14 +429,14 @@ public class MainActivity extends AppCompatActivity {
         request.setProcessOption(processOption);//设置参数
         mTraceClient.queryLatestPoint(request,trackListener);
     }
-    public void mHistoryTrack(){
+    public void mHistoryTrack(View view){
         //这个函数最好是结束后调用，回调函数中得到整个过程的
         HistoryTrackRequest historyTrackRequest=new HistoryTrackRequest();
         ProcessOption processOption=new ProcessOption();//纠偏选项
         processOption.setRadiusThreshold(50);//设置精度过滤，0为不需要；精度大于50米的位置点过滤掉
         processOption.setTransportMode(TransportMode.walking);
         processOption.setNeedDenoise(true);//去噪处理
-        processOption.setNeedVacuate(true);
+        processOption.setNeedVacuate(true);//抽稀
         processOption.setNeedMapMatch(true);//绑路处理
         historyTrackRequest.setProcessOption(processOption);//设置参数
         /**

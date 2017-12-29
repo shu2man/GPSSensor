@@ -115,7 +115,7 @@
         android:id="@+id/user_center_ibtn"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:background="@drawable/baidu_du"
+        android:background="@drawable/set_information"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="10dp"
@@ -139,7 +139,7 @@
             android:layout_weight="4"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="输入 设备名/编号 搜索轨迹"
+            android:hint="              设置/搜索 轨迹信息"
             android:textSize="14sp"
             android:textColorHint="@color/hint_color"
             />
@@ -148,7 +148,8 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="搜索" />
+            android:text="搜索"
+            android:onClick="mHistoryTrack"/>
 
     </LinearLayout>
 

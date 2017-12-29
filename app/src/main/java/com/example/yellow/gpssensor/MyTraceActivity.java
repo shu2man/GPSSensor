@@ -77,8 +77,8 @@ public class MyTraceActivity extends AppCompatActivity{
         // 初始化轨迹服务客户端
         mTraceClient=new LBSTraceClient(getApplicationContext());
 
-        gatherInterval=5;// 定位周期(单位:秒)
-        packInterval=10;// 打包回传周期(单位:秒)
+        gatherInterval=1;// 定位周期(单位:秒)
+        packInterval=3;// 打包回传周期(单位:秒)
         // 设置定位和打包周期
         mTraceClient.setInterval(gatherInterval,packInterval);
         mTraceClient.setLocationMode(LocationMode.High_Accuracy);
