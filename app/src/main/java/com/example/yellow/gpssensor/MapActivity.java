@@ -2,6 +2,7 @@ package com.example.yellow.gpssensor;
 //debug-SHA1: 0C:18:37:35:DE:B1:54:97:EE:3B:DB:D7:4F:2B:74:C3:6C:45:F9:C5
 //release-SHA1: 92:7E:2D:91:E3:D9:F6:59:0E:13:0F:62:25:CF:C9:B4:5C:08:A1:60
 //service-id:153058
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +65,8 @@ import com.baidu.trace.model.SortType;
 import com.baidu.trace.model.TraceLocation;
 import com.baidu.trace.model.TransportMode;
 
+import static java.lang.Math.sqrt;
+
 public class MapActivity extends AppCompatActivity {
     private int tag=1;// 请求标识
     private String entityName="myTestTrace";
@@ -78,6 +81,7 @@ public class MapActivity extends AppCompatActivity {
 
     private long endTime;
     private long startTime;
+    private double localCurrentSpeed=0;
     private LatLng lastPoint;
     private List<LatLng> trackLatLngs;
     private boolean isNeedRealTimeDraw=false;
@@ -138,7 +142,7 @@ public class MapActivity extends AppCompatActivity {
         option.setLocationNotify(true);//可选，默认false，设置是否当GPS有效时按照1S/1次频率输出GPS结果
         //可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
         option.setIsNeedLocationDescribe(true);
-        option.setIsNeedLocationPoiList(false);//可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
+        option.setIsNeedLocationPoiList(false);//可选，默认false，设置是否需要POI 结果，可以在BDLocation.getPoiList里得到
         //可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
         option.setIgnoreKillProcess(false);
         option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
@@ -205,10 +209,11 @@ public class MapActivity extends AppCompatActivity {
 
         @Override
         public void onReceiveLocation(BDLocation location){
+            localCurrentSpeed=location.getSpeed();
             // 构造定位数据
             MyLocationData locData=new MyLocationData.Builder()
                     .accuracy(location.getRadius())
-                    .direction(100)// 此处设置开发者获取到的方向信息，顺时针0-360
+                    .direction(100)// 此处设置开发者获取到的方向信息，顺时针0-360,100
                     .latitude(location.getLatitude())
                     .longitude(location.getLatitude())
                     .build();
@@ -237,9 +242,10 @@ public class MapActivity extends AppCompatActivity {
                     mBaiduMap.addOverlay(option);
                 }
                 else{
-                    TextView tv=(TextView)findViewById(R.id.loc_text);
+                    /*TextView tv=(TextView)findViewById(R.id.loc_text);
                     String txt=""+tv;
-                    tv.setText(txt);
+                    tv.setText(txt);*/
+                    Toast.makeText(MapActivity.this,errorCode+"  Something Wrong!",Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -250,6 +256,8 @@ public class MapActivity extends AppCompatActivity {
                     mBaiduMap.clear();
                     mPolyline = (Polyline) mBaiduMap.addOverlay(ooPolyline);//显示当前位置，并时时动态的画出运动轨
                 }
+                //distanceCount();//0-request,1-caculate with trackLatLngs
+                updateTraceInformation(disLatLng());
             }
 
             /*
@@ -394,6 +402,7 @@ public class MapActivity extends AppCompatActivity {
             OverlayOptions ooPolyline=new PolylineOptions().width(10).color(0xAAFF0000).points(trackLatLngs);
             mBaiduMap.clear();
             mPolyline=(Polyline)mBaiduMap.addOverlay(ooPolyline);
+            //updateTraceInformation("5","100");//test
         }
         @Override
         public void onHistoryTrackCallback(HistoryTrackResponse response){
@@ -416,7 +425,8 @@ public class MapActivity extends AppCompatActivity {
         public void onDistanceCallback(DistanceResponse response){
             super.onDistanceCallback(response);
             double distance=response.getDistance();//里程，单位：米
-            double speed=distance/(endTime-startTime);////速度：m/s
+            double avgspeed=distance/(System.currentTimeMillis()/1000-startTime);////速度：m/s
+            //updateTraceInformation(distance);
         }
     };
 
@@ -484,7 +494,7 @@ public class MapActivity extends AppCompatActivity {
     public void distanceCount(){
         DistanceRequest distanceRequest = new DistanceRequest(tag, serviceId, entityName);
         distanceRequest.setStartTime(startTime);// 设置开始时间
-        distanceRequest.setEndTime(endTime);// 设置结束时间
+        distanceRequest.setEndTime(System.currentTimeMillis()/1000);// 设置结束时间
         distanceRequest.setProcessed(true);// 纠偏
         ProcessOption processOption = new ProcessOption();// 创建纠偏选项实例
         processOption.setNeedDenoise(true);// 去噪
@@ -494,6 +504,15 @@ public class MapActivity extends AppCompatActivity {
         distanceRequest.setSupplementMode(SupplementMode.no_supplement);// 里程填充方式为无
 
         mTraceClient.queryDistance(distanceRequest, trackListener);// 查询里程
+    }
+    public double disLatLng(){
+        double sum=0;
+        for(int i=1;i<trackLatLngs.size();i++){
+            double lat=trackLatLngs.get(i).latitude-trackLatLngs.get(i-1).latitude;
+            double lng=trackLatLngs.get(i).longitude-trackLatLngs.get(i-1).longitude;
+            sum+=Math.sqrt(lat*lat+lng*lng);
+        }
+        return sum;
     }
 
     public void goToHome(View view){
@@ -507,7 +526,7 @@ public class MapActivity extends AppCompatActivity {
         if(mode==1){
             MenuCL.setVisibility(View.VISIBLE);
             LL.setVisibility(View.VISIBLE);
-            TraceCL.setVisibility(View.GONE);
+            //TraceCL.setVisibility(View.GONE);
         }
         else if(mode==0){
             MenuCL.setVisibility(View.GONE);
@@ -515,6 +534,31 @@ public class MapActivity extends AppCompatActivity {
             TraceCL.setVisibility(View.VISIBLE);
         }
     }
+    public void updateTraceInformation(double distance){
+        TextView tv1=(TextView)findViewById(R.id.current_speed_num);
+        TextView tv2=(TextView)findViewById(R.id.distance_trace_num_information);
+        TextView tv3=(TextView)findViewById(R.id.time_trace_num_information);
+        TextView tv4=(TextView)findViewById(R.id.average_speed_num);
+        DecimalFormat f=new DecimalFormat("#.0");
+        double avgs=distance/(System.currentTimeMillis()/1000-startTime);
+        tv1.setText(localCurrentSpeed+"");
+        tv2.setText(f.format(distance*111110));
+        tv3.setText(getTimeHMSFormat(System.currentTimeMillis()/1000-startTime));
+        tv4.setText(f.format(avgs));
+    }
+    public String getTimeHMSFormat(long t){
+        String h="";
+        String m="";
+        String s="";
+        long ts=t%60;
+        long tm=t/60;
+        long th=t/3600;
+        if(ts<10) s+="0";
+        if(tm<10) m+="0";
+        if(th<10) h+="0";
+        return h+th+":"+m+tm+":"+s+ts;
+    }
+
 }
 
 

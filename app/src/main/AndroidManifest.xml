@@ -38,10 +38,11 @@
 
         <activity android:name=".login"/>
 
-        <activity android:name=".MapActivity"
-            android:launchMode="singleInstance"/>
+<!--        <activity android:name=".MapActivity"
+            android:launchMode="singleInstance"/>-->
 
-        <activity android:name=".welcome">
+        <activity android:name=".MapActivity"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
