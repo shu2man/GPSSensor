@@ -451,5 +451,10 @@ public class home_page extends AppCompatActivity {
             }
         }
     };
+
+    public void goToMap(View view){
+        Intent intent=new Intent(this,MapActivity.class);
+        startActivity(intent);
+    }
 }
 

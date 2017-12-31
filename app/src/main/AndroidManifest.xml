@@ -35,6 +35,7 @@
 
         <activity android:name=".home_page"/>
         <activity android:name=".login"/>
+        <activity android:name=".MapActivity"/>
         <activity android:name=".welcome">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

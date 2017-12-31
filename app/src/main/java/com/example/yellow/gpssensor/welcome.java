@@ -20,7 +20,7 @@ public class welcome extends AppCompatActivity {
                 {
                     progressBar.setProgress(progressBar.getProgress()+1);
                     try {
-                        Thread.sleep(300);
+                        Thread.sleep(200);
                     }catch (InterruptedException e){}
                     Intent intent =new Intent(welcome.this,login.class);
                     startActivity(intent);
@@ -37,7 +37,7 @@ public class welcome extends AppCompatActivity {
             public void run(){
                 while (true){
                     try {
-                        Thread.sleep(10);
+                        Thread.sleep(5);
                     }catch (InterruptedException e){}
                     Message mas = welcome_bar_handler.obtainMessage(233);
                     mas.sendToTarget();
