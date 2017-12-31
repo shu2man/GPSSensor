@@ -23,7 +23,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/baidu_du"
+        android:icon="@drawable/jiqu_hd"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -33,9 +33,14 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="tuZb0fFKcTwANzRDihPF0yfN9MPpxNpW"/>
 
-        <activity android:name=".home_page"/>
+        <activity android:name=".home_page"
+            android:launchMode="singleInstance"/>
+
         <activity android:name=".login"/>
-        <activity android:name=".MapActivity"/>
+
+        <activity android:name=".MapActivity"
+            android:launchMode="singleInstance"/>
+
         <activity android:name=".welcome">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

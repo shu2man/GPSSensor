@@ -5,12 +5,15 @@ package com.example.yellow.gpssensor;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
 import android.os.Build;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -108,6 +111,8 @@ public class MapActivity extends AppCompatActivity {
         initLoc();
 
         initTrace();
+
+        locateToCurrent((ImageButton)findViewById(R.id.locating_button));
     }
 
     public void initLoc(){
@@ -334,19 +339,21 @@ public class MapActivity extends AppCompatActivity {
         else ibtn.setBackgroundResource(R.drawable.satellite_off);
     }
     public void traceSwitch(View view){
-        ImageButton ibtn=(ImageButton)findViewById(R.id.trace_button);
-        TextView tv=(TextView)findViewById(R.id.trace_text);
+        ImageButton ibtn=(ImageButton)findViewById(R.id.record_button);
+        TextView tv=(TextView)findViewById(R.id.record_text);
         if(isTracing) {
             stopTrace();
             isTracing=false;
-            tv.setText("录制轨迹");
+            tv.setText("开始录制");
             ibtn.setBackgroundResource(R.drawable.trace_start);
+            setTopAndRightComponentsVisibility(1);//1-show
         }
         else {
             startTrace();
             isTracing=true;
             tv.setText("停止录制");
             ibtn.setBackgroundResource(R.drawable.trace_stop);
+            setTopAndRightComponentsVisibility(0);//0-hide
         }
     }
     public void setLocalDeviceInformation(View view){
@@ -487,6 +494,26 @@ public class MapActivity extends AppCompatActivity {
         distanceRequest.setSupplementMode(SupplementMode.no_supplement);// 里程填充方式为无
 
         mTraceClient.queryDistance(distanceRequest, trackListener);// 查询里程
+    }
+
+    public void goToHome(View view){
+        Intent intent=new Intent(this,home_page.class);
+        startActivity(intent);
+    }
+    public void setTopAndRightComponentsVisibility(int mode){
+        ConstraintLayout MenuCL=(ConstraintLayout)findViewById(R.id.search_bar_layout);
+        ConstraintLayout TraceCL=(ConstraintLayout)findViewById(R.id.trace_information_container);
+        LinearLayout LL=(LinearLayout)findViewById(R.id.map_menus_right);
+        if(mode==1){
+            MenuCL.setVisibility(View.VISIBLE);
+            LL.setVisibility(View.VISIBLE);
+            TraceCL.setVisibility(View.GONE);
+        }
+        else if(mode==0){
+            MenuCL.setVisibility(View.GONE);
+            LL.setVisibility(View.GONE);
+            TraceCL.setVisibility(View.VISIBLE);
+        }
     }
 }
 
