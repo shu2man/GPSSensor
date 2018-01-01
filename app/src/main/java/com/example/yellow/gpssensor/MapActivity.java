@@ -41,6 +41,7 @@ import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.TextureMapView;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.location.Poi;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.baidu.trace.LBSTraceClient;
 import com.baidu.trace.Trace;
 import com.baidu.trace.api.entity.LocRequest;
@@ -84,6 +85,7 @@ public class MapActivity extends AppCompatActivity {
     private double localCurrentSpeed=0;
     private LatLng lastPoint;
     private List<LatLng> trackLatLngs;
+    private List<LatLng> drawLatLngs;
     private boolean isNeedRealTimeDraw=false;
     public Trace mTrace;
     public LBSTraceClient mTraceClient;
@@ -252,12 +254,15 @@ public class MapActivity extends AppCompatActivity {
             if(isNeedRealTimeDraw) {
                 trackLatLngs.add(ll);
                 if (trackLatLngs.size() >= 2) {
+                    BitmapDescriptor bitmap=BitmapDescriptorFactory.fromResource(R.drawable.loc_current32red);
+                    OverlayOptions poptions=new MarkerOptions().position(ll).icon(bitmap);
+
                     PolylineOptions ooPolyline = new PolylineOptions().width(10).color(0xAAFF0000).points(trackLatLngs);
                     mBaiduMap.clear();
                     mPolyline = (Polyline) mBaiduMap.addOverlay(ooPolyline);//显示当前位置，并时时动态的画出运动轨
                 }
                 //distanceCount();//0-request,1-caculate with trackLatLngs
-                updateTraceInformation(disLatLng());
+                updateTraceInformation(disLatLng(trackLatLngs));
             }
 
             /*
@@ -505,12 +510,13 @@ public class MapActivity extends AppCompatActivity {
 
         mTraceClient.queryDistance(distanceRequest, trackListener);// 查询里程
     }
-    public double disLatLng(){
+    public double disLatLng(List<LatLng> plist){
         double sum=0;
-        for(int i=1;i<trackLatLngs.size();i++){
-            double lat=trackLatLngs.get(i).latitude-trackLatLngs.get(i-1).latitude;
+        for(int i=1;i<plist.size();i++){
+            /*double lat=trackLatLngs.get(i).latitude-trackLatLngs.get(i-1).latitude;
             double lng=trackLatLngs.get(i).longitude-trackLatLngs.get(i-1).longitude;
-            sum+=Math.sqrt(lat*lat+lng*lng);
+            sum+=Math.sqrt(lat*lat+lng*lng);*/
+            sum+=DistanceUtil.getDistance(plist.get(i),plist.get(i-1));
         }
         return sum;
     }
