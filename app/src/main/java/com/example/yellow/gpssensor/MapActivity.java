@@ -628,9 +628,17 @@ public class MapActivity extends AppCompatActivity {
             }
         };
     }
+    public void goToShareBtn(View view){
+        goToShare("none");
+    }
     public void goToShare(String type){
         Intent intent=new Intent(MapActivity.this,ShareActivity.class);
         intent.putExtra("type",type);
+        intent.putExtra("last","Map");
+        startActivity(intent);
+    }
+    public void goToGroup(View view){
+        Intent intent=new Intent(MapActivity.this,GroupActivity.class);
         startActivity(intent);
     }
     public void updateDrawInfo(){

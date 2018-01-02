@@ -125,6 +125,7 @@
             android:layout_height="28dp"
             android:scaleType="fitCenter"
             android:src="@drawable/icon_quanzi"
+            android:onClick="goToGroup"
             android:background="#00000000"/>
 
         <ImageButton

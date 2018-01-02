@@ -40,6 +40,9 @@
 
         <activity android:name=".ShareActivity"/>
 
+        <activity android:name=".GroupActivity"
+            android:launchMode="singleInstance"/>
+
 <!--        <activity android:name=".MapActivity"
             android:launchMode="singleInstance"/>-->
 

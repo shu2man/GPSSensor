@@ -20,7 +20,7 @@ public class ShareActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
         type=getIntent().getStringExtra("type");
-        lastActivity=getIntent().getStringExtra("last")
+        lastActivity=getIntent().getStringExtra("last");
 
         shareContentInit();
     }
@@ -29,23 +29,22 @@ public class ShareActivity extends Activity {
     }
 
     public void share(View view){
-
+        //save and update listviews and gridviews
     }
-    public void backToHome(){
-        if(lastActivity.equals("Map")){
-            Intent intent=new Intent(this,MapActivity.class);
-            startActivity(intent);
-            this.finish();
+    public void backToLast(){
+        switch (lastActivity){
+            case "Map":
+                Intent intent1=new Intent(this,MapActivity.class);
+                startActivity(intent1);
+                break;
+            case "Home":
+                Intent intent2=new Intent(this,home_page.class);
+                startActivity(intent2);
+                break;
+            case "Quanzi":
+                Intent intent3=new Intent(this,GroupActivity.class);
+                startActivity(intent3);
         }
-        else if(lastActivity.equals("Home")){
-            Intent intent=new Intent(this,home_page.class);
-            startActivity(intent);
-            this.finish();
-        }
-        else if(lastActivity.equals("Quanzi")){
-            Intent intent=new Intent(this,Quanzi.class);
-            startActivity(intent);
-            this.finish();
-        }
+        this.finish();
     }
 }

@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#8e8e8f</color>
     <color name="colorAccent">#4eb89c</color>
     <color name="listbgc">#fefefe</color>
+    <color name="listbgc_half">#fefefe</color>
     <color name="hint_color">#cfc9d1d3</color>
     <color name="blue_interaction">#6290e6</color>
     <color name="color_theme">#e3f9f7</color>

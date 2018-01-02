@@ -456,5 +456,9 @@ public class home_page extends AppCompatActivity {
         Intent intent=new Intent(this,MapActivity.class);
         startActivity(intent);
     }
+    public void goToGroup(View view){
+        Intent intent=new Intent(this,GroupActivity.class);
+        startActivity(intent);
+    }
 }
 
