@@ -52,4 +52,6 @@ public class welcome extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
         welcome_bar_animation();
     }
+
+
 }
