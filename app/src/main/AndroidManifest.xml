@@ -38,6 +38,8 @@
 
         <activity android:name=".login"/>
 
+        <activity android:name=".ShareActivity"/>
+
 <!--        <activity android:name=".MapActivity"
             android:launchMode="singleInstance"/>-->
 

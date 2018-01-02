@@ -106,7 +106,7 @@
         android:layout_height="0dp"
         android:clickable="true"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottom_guide_in_map"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_guide_in_map"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
     </com.baidu.mapapi.map.TextureMapView>
@@ -219,14 +219,16 @@
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:background="@drawable/icon_draw"
+                android:onClick="startDraw"
                 />
             <TextView
                 android:id="@+id/draw_trace_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="画轨迹"
-                android:textSize="10sp"
-                android:layout_marginTop="5dp"/>
+                android:textSize="12sp"
+                android:layout_marginTop="5dp"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -236,9 +238,8 @@
             android:orientation="vertical"
             android:gravity="center_horizontal"
             android:padding="3dp"
-            android:layout_marginEnd="10dp"
             android:visibility="gone"
-            app:layout_constraintRight_toLeftOf="@id/draw_trace_layout"
+            app:layout_constraintRight_toLeftOf="@+id/draw_trace_layout"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
             <ImageButton
@@ -265,7 +266,7 @@
             android:layout_marginEnd="10dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/record_trace_layout"
+            app:layout_constraintRight_toLeftOf="@+id/record_trace_layout"
             />
         <EditText
             android:id="@+id/search_edit_text"
@@ -279,8 +280,9 @@
             android:layout_marginEnd="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toRightOf="@id/user_center_ibtn"
-            app:layout_constraintRight_toLeftOf="@id/search_button"
+            app:layout_constraintLeft_toRightOf="@+id/user_center_ibtn"
+            app:layout_constraintRight_toLeftOf="@+id/search_button"
+            app:layout_constraintVertical_bias="0.65"
             />
     </android.support.constraint.ConstraintLayout>
 
@@ -295,7 +297,7 @@
         android:layout_marginBottom="20dp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottom_guide_in_map">
+        app:layout_constraintBottom_toTopOf="@+id/bottom_guide_in_map">
         <ImageButton
             android:id="@+id/record_button"
             android:layout_width="25dp"
@@ -313,13 +315,13 @@
     </LinearLayout>
     <android.support.constraint.ConstraintLayout
         android:id="@+id/trace_information_container"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_transparent_dark"
-        android:layout_marginEnd="15dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="10dp"
         android:visibility="gone"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="10dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
@@ -335,49 +337,107 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             />
-        <TextView
-            android:id="@+id/current_speed_num"
-            android:layout_width="wrap_content"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/trace_finish_btns_container"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="0"
-            android:textSize="40sp"
-            android:textStyle="bold"
-            android:textColor="@color/color_text_on_dark"
-            app:layout_constraintTop_toBottomOf="@id/trace_information_title"
+            android:layout_marginTop="5dp"
+            android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"/>
-        <TextView
-            android:id="@+id/speed_unit"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/trace_information_title">
+            <Button
+                android:id="@+id/trace_share_btn"
+                android:layout_width="72dp"
+                android:layout_height="45dp"
+                android:text="分享"
+                android:onClick="shareTrace"
+                android:textSize="18sp"
+                android:textColor="@color/listbgc"
+                android:background="@drawable/bg_transparent_dark"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <Button
+                android:id="@+id/trace_cancel_btn"
+                android:layout_width="55dp"
+                android:layout_height="30dp"
+                android:text="取消"
+                android:onClick="cancelTrace"
+                android:textColor="@color/listbgc"
+                android:background="@drawable/bg_transparent_dark"
+                app:layout_constraintTop_toTopOf="@id/trace_share_btn"
+                app:layout_constraintBottom_toBottomOf="@id/trace_share_btn"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/trace_share_btn"
+                />
+            <Button
+                android:id="@+id/trace_save_btn"
+                android:layout_width="55dp"
+                android:layout_height="30dp"
+                android:text="保存"
+                android:onClick="finishTrace"
+                android:textColor="@color/listbgc"
+                android:background="@drawable/bg_transparent_dark"
+                app:layout_constraintLeft_toRightOf="@id/trace_share_btn"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/trace_share_btn"
+                app:layout_constraintBottom_toBottomOf="@id/trace_share_btn"
+                />
+        </android.support.constraint.ConstraintLayout>
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/current_speed_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="m/s"
-            android:textSize="18sp"
-            android:textColor="@color/listbgc"
-            android:layout_marginStart="10dp"
-            app:layout_constraintLeft_toRightOf="@id/current_speed_num"
-            app:layout_constraintBottom_toBottomOf="@id/current_speed_num"
-            />
-        <TextView
-            android:id="@+id/current_speed_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="时速"
-            android:textColor="@color/listbgc"
-            app:layout_constraintTop_toBottomOf="@id/current_speed_num"
-            app:layout_constraintLeft_toLeftOf="@id/current_speed_num"
-            app:layout_constraintRight_toRightOf="@id/current_speed_num"/>
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@id/trace_finish_btns_container"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+            <TextView
+                android:id="@+id/current_speed_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                android:textColor="@color/color_text_on_dark"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"/>
+            <TextView
+                android:id="@+id/speed_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="m/s"
+                android:textSize="18sp"
+                android:textColor="@color/listbgc"
+                android:layout_marginStart="10dp"
+                app:layout_constraintLeft_toRightOf="@+id/current_speed_num"
+                app:layout_constraintBottom_toBottomOf="@+id/current_speed_num"
+                />
+            <TextView
+                android:id="@+id/current_speed_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="速度"
+                android:textColor="@color/listbgc"
+                app:layout_constraintTop_toBottomOf="@+id/current_speed_num"
+                app:layout_constraintLeft_toLeftOf="@+id/current_speed_num"
+                app:layout_constraintRight_toRightOf="@+id/current_speed_num"/>
+        </android.support.constraint.ConstraintLayout>
 
         <TextView
             android:id="@+id/divider_line_trace_information"
-            android:layout_width="match_parent"
-            android:layout_height="0.7dp"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
             android:layout_marginTop="8dp"
             android:background="@color/listbgc"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/current_speed_title"/>
+            app:layout_constraintTop_toBottomOf="@+id/current_speed_container"
+            />
 
         <TextView
             android:id="@+id/distance_trace_num_information"
@@ -390,7 +450,7 @@
             android:textColor="@color/listbgc"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/divider_line_trace_information"
+            app:layout_constraintTop_toBottomOf="@+id/divider_line_trace_information"
             app:layout_constraintHorizontal_bias="0.1"/>
         <TextView
             android:id="@+id/distance_trace_unit_information"
@@ -401,8 +461,8 @@
             android:textStyle="bold"
             android:textColor="@color/listbgc"
             android:layout_marginStart="2dp"
-            app:layout_constraintBottom_toBottomOf="@id/distance_trace_num_information"
-            app:layout_constraintLeft_toRightOf="@id/distance_trace_num_information"/>
+            app:layout_constraintBottom_toBottomOf="@+id/distance_trace_num_information"
+            app:layout_constraintLeft_toRightOf="@+id/distance_trace_num_information"/>
         <TextView
             android:id="@+id/distance_title_information"
             android:layout_width="wrap_content"
@@ -410,9 +470,9 @@
             android:text="距离"
             android:textSize="14sp"
             android:textColor="@color/listbgc"
-            app:layout_constraintTop_toBottomOf="@id/distance_trace_num_information"
-            app:layout_constraintLeft_toLeftOf="@id/distance_trace_num_information"
-            app:layout_constraintRight_toRightOf="@id/distance_trace_unit_information"/>
+            app:layout_constraintTop_toBottomOf="@+id/distance_trace_num_information"
+            app:layout_constraintLeft_toLeftOf="@+id/distance_trace_num_information"
+            app:layout_constraintRight_toRightOf="@+id/distance_trace_unit_information"/>
 
 
         <TextView
@@ -426,7 +486,7 @@
             android:textColor="@color/listbgc"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/divider_line_trace_information" />
+            app:layout_constraintTop_toBottomOf="@+id/divider_line_trace_information" />
         <TextView
             android:id="@+id/time_title_information"
             android:layout_width="wrap_content"
@@ -434,9 +494,9 @@
             android:text="时间"
             android:textSize="14sp"
             android:textColor="@color/listbgc"
-            app:layout_constraintTop_toBottomOf="@id/time_trace_num_information"
-            app:layout_constraintLeft_toLeftOf="@id/time_trace_num_information"
-            app:layout_constraintRight_toRightOf="@id/time_trace_num_information"/>
+            app:layout_constraintTop_toBottomOf="@+id/time_trace_num_information"
+            app:layout_constraintLeft_toLeftOf="@+id/time_trace_num_information"
+            app:layout_constraintRight_toRightOf="@+id/time_trace_num_information"/>
 
         <TextView
             android:id="@+id/average_speed_num"
@@ -449,7 +509,7 @@
             android:textColor="@color/listbgc"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/divider_line_trace_information"
+            app:layout_constraintTop_toBottomOf="@+id/divider_line_trace_information"
             app:layout_constraintHorizontal_bias="0.83"/>
         <TextView
             android:id="@+id/average_speed_unit"
@@ -460,8 +520,8 @@
             android:textStyle="bold"
             android:layout_marginStart="2dp"
             android:textColor="@color/listbgc"
-            app:layout_constraintBottom_toBottomOf="@id/average_speed_num"
-            app:layout_constraintLeft_toRightOf="@id/average_speed_num"/>
+            app:layout_constraintBottom_toBottomOf="@+id/average_speed_num"
+            app:layout_constraintLeft_toRightOf="@+id/average_speed_num"/>
         <TextView
             android:id="@+id/average_speed_title"
             android:layout_width="wrap_content"
@@ -469,14 +529,124 @@
             android:text="均速"
             android:textSize="14sp"
             android:textColor="@color/listbgc"
-            app:layout_constraintTop_toBottomOf="@id/average_speed_num"
-            app:layout_constraintLeft_toLeftOf="@id/average_speed_num"
-            app:layout_constraintRight_toRightOf="@id/average_speed_unit"/>
+            app:layout_constraintTop_toBottomOf="@+id/average_speed_num"
+            app:layout_constraintLeft_toLeftOf="@+id/average_speed_num"
+            app:layout_constraintRight_toRightOf="@+id/average_speed_unit"/>
 
         <View
             android:layout_width="wrap_content"
             android:layout_height="5dp"
-            app:layout_constraintTop_toBottomOf="@id/time_title_information"/>
+            app:layout_constraintTop_toBottomOf="@+id/time_title_information"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/draw_information_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_transparent_dark"
+        android:visibility="gone"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+        <TextView
+            android:id="@+id/draw_information_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="画轨迹"
+            android:textSize="18sp"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/listbgc"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+        <TextView
+            android:id="@+id/draw_distance_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:textColor="@color/color_text_on_dark"
+            app:layout_constraintTop_toBottomOf="@+id/draw_information_title"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
+        <TextView
+            android:id="@+id/draw_distance_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="m"
+            android:textSize="18sp"
+            android:textColor="@color/listbgc"
+            android:layout_marginStart="10dp"
+            app:layout_constraintLeft_toRightOf="@+id/draw_distance_num"
+            app:layout_constraintBottom_toBottomOf="@+id/draw_distance_num"
+            />
+        <TextView
+            android:id="@+id/draw_distance_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="距离"
+            android:textColor="@color/listbgc"
+            app:layout_constraintTop_toBottomOf="@+id/draw_distance_num"
+            app:layout_constraintLeft_toLeftOf="@+id/draw_distance_num"
+            app:layout_constraintRight_toRightOf="@+id/draw_distance_num"
+            />
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="7dp"
+            app:layout_constraintTop_toBottomOf="@+id/draw_distance_title"
+            app:layout_constraintLeft_toLeftOf="parent" />
+        <Button
+            android:id="@+id/draw_cancel_btn"
+            android:layout_width="75dp"
+            android:layout_height="40dp"
+            android:text="取消"
+            android:background="@drawable/bg_transparent_dark"
+            android:textColor="@color/listbgc"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:onClick="cancelDraw"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+        <ImageButton
+            android:id="@+id/draw_undo_ibtn"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/icon_undo"
+            android:layout_marginTop="15dp"
+            android:onClick="undoADraw"
+            app:layout_constraintLeft_toLeftOf="@+id/draw_cancel_btn"
+            app:layout_constraintRight_toRightOf="@+id/draw_cancel_btn"
+            app:layout_constraintTop_toBottomOf="@+id/draw_cancel_btn"/>
+        <Button
+            android:id="@+id/draw_finish_btn"
+            android:layout_width="75dp"
+            android:layout_height="40dp"
+            android:text="完成"
+            android:background="@drawable/bg_transparent_dark"
+            android:textColor="@color/listbgc"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="10dp"
+            android:onClick="finishDraw"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+        <ImageButton
+            android:id="@+id/draw_share_ibtn"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/icon_share"
+            android:layout_marginTop="15dp"
+            android:onClick="shareDraw"
+            app:layout_constraintLeft_toLeftOf="@+id/draw_finish_btn"
+            app:layout_constraintRight_toRightOf="@+id/draw_finish_btn"
+            app:layout_constraintTop_toBottomOf="@+id/draw_finish_btn"/>
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>
