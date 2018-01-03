@@ -99,7 +99,7 @@
     <Button
         android:id="@+id/login_btn"
         android:layout_width="100dp"
-        android:layout_height="35dp"
+        android:layout_height="40dp"
         android:background="@drawable/bg_login_btn"
         android:layout_marginTop="6dp"
         android:text="登录"
@@ -115,7 +115,7 @@
         android:id="@+id/login_alternative_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="15dp"
         android:visibility="visible"
         app:layout_constraintTop_toBottomOf="@+id/login_btn"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -168,12 +168,12 @@
             android:layout_marginStart="24dp" />
         <Button
             android:layout_width="100dp"
-            android:layout_height="35dp"
+            android:layout_height="40dp"
             android:text="注册"
             android:textColor="#ffffff"
             android:textStyle="bold"
             android:id="@+id/login_register_button"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="40dp"
             android:layout_marginRight="8dp"
             android:layout_marginLeft="8dp"
             android:background="@drawable/bg_login_btn"
@@ -187,12 +187,12 @@
             />
         <Button
             android:layout_width="100dp"
-            android:layout_height="35dp"
+            android:layout_height="40dp"
             android:text="试用"
             android:textColor="#ffffff"
             android:textStyle="bold"
             android:id="@+id/login_no_register_button"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="40dp"
             android:layout_marginRight="8dp"
             android:layout_marginLeft="8dp"
             android:background="@drawable/bg_login_btn"

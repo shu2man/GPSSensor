@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
+import android.provider.ContactsContract;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -76,17 +77,23 @@ public class login extends AppCompatActivity {
     public void RegisterIn(View view){
         EditText et_confirm=(EditText)findViewById(R.id.confirm_password_edit);
         EditText et_new=(EditText)findViewById(R.id.login_password_edit);
+        EditText et_name=(EditText)findViewById(R.id.login_name_edit);
         if(et_confirm.getText().toString().equals("") || et_new.getText().toString().equals("")){
             Toast.makeText(this,"Password Incomplete",Toast.LENGTH_SHORT).show();
         }
+        //保存用户名和密码
         else if(et_confirm.getText().toString().equals(et_new.getText().toString())){
             SharedPreferences.Editor editor=sharedPreferences.edit();
             editor.putBoolean("isFirstLaunch",false);
             editor.putString("Password",et_confirm.getText().toString());
+            editor.putString("Username",et_name.getText().toString());
             editor.apply();
 
             Intent intent=new Intent(this,home_page.class);
             startActivity(intent);
+            DataShare ds=((DataShare)getApplicationContext());
+            ds.setUsername(sharedPreferences.getString("Username","游客"));
+            Toast.makeText(this,sharedPreferences.getString("Username","游客"),Toast.LENGTH_SHORT).show();
             this.finish();
         }
         else{
