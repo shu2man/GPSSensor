@@ -33,6 +33,8 @@ public class login extends AppCompatActivity {
         unlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DataShare ds=((DataShare)getApplicationContext());
+                ds.setUsername("游客");
                 goToHome();
             }
         });

@@ -199,7 +199,7 @@
             android:layout_height="30dp"
             android:background="@drawable/set_information"
             android:layout_marginStart="10dp"
-            android:onClick="setLocalDeviceInformation"
+            android:onClick="goToSetting"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"

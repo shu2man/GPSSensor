@@ -48,6 +48,8 @@
 
         <activity android:name=".MapActivity"
             android:launchMode="singleInstance"/>
+        <activity android:name=".SettingActivity"
+            android:launchMode="singleInstance"/>
 
         <activity android:name=".welcome"
             android:launchMode="singleInstance">

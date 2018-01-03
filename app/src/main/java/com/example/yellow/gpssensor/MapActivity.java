@@ -6,9 +6,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -100,6 +104,15 @@ public class MapActivity extends AppCompatActivity {
     private boolean isDraw=false;
     private boolean isNeedRealTimeDraw=false;
 
+    private static final int REQUEST_ACCESS_COARSE_LOCATION=1;
+    private static final int REQUEST_ACCESS_FINE_LOCATION=2;
+    private static final int REQUEST_INTERNET=3;
+    private static String[] PERMISSION_LOCATION={
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.INTERNET
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,6 +134,25 @@ public class MapActivity extends AppCompatActivity {
         initTrace();
 
         locateToCurrent((ImageButton)findViewById(R.id.locating_button));
+    }
+    public void verifyPermission(Activity activity){
+        try{
+            int permission= ActivityCompat.checkSelfPermission(activity,"android.permission.ACCESS_COARSE_LOCATION");
+            if(permission!= PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(activity,PERMISSION_LOCATION,1);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,String permission[],int[] grantResults){
+        if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+            //permission granted
+        }
+        else{
+            //permission not set
+        }
     }
 
     public void initLoc(){
@@ -671,6 +703,11 @@ public class MapActivity extends AppCompatActivity {
         setTopAndRightComponentsVisibility(1);
     }
 
+
+    public void goToSetting(View view){
+        Intent intent=new Intent(this,SettingActivity.class);
+        startActivity(intent);
+    }
 }
 
 
