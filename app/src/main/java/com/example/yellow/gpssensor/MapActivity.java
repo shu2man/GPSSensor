@@ -133,6 +133,8 @@ public class MapActivity extends AppCompatActivity {
 
         initTrace();
 
+        verifyPermission(this);
+
         locateToCurrent((ImageButton)findViewById(R.id.locating_button));
     }
     public void verifyPermission(Activity activity){
@@ -238,6 +240,7 @@ public class MapActivity extends AppCompatActivity {
 
     public void locateToCurrent(View target){
         isFirstLoc=true;
+        mBaiduMap.clear();
         mLocationClient.start();// 构造定位数据
     }
 
@@ -607,6 +610,7 @@ public class MapActivity extends AppCompatActivity {
     public void cancelTrace(View view){
         setVisibilityInsideTraceInfo(0);//show countings and hide btns
         setTopAndRightComponentsVisibility(1);
+        mBaiduMap.clear();
         //no need to save in case of cancel
     }
     public void finishTrace(View view){
@@ -614,12 +618,14 @@ public class MapActivity extends AppCompatActivity {
         setVisibilityInsideTraceInfo(0);
         setTopAndRightComponentsVisibility(1);
         Toast.makeText(this, "轨迹已经保存到个人中心啦", Toast.LENGTH_SHORT).show();
+        mBaiduMap.clear();
     }
     public void shareTrace(View view){
         //save traceLatLngs before share
         setVisibilityInsideTraceInfo(0);
         setTopAndRightComponentsVisibility(1);
         goToShare("trace");
+        mBaiduMap.clear();
     }
     public String getTimeHMSFormat(long t){
         String h="";
@@ -687,6 +693,7 @@ public class MapActivity extends AppCompatActivity {
         isDraw=false;
         Toast.makeText(this,"绘制的轨迹已经保存在个人中心啦",Toast.LENGTH_SHORT).show();
         setTopAndRightComponentsVisibility(1);
+        mBaiduMap.clear();
         //save drawLatLngs
     }
     public void shareDraw(View view){
@@ -701,6 +708,7 @@ public class MapActivity extends AppCompatActivity {
     public void cancelDraw(View view){
         isDraw=false;
         setTopAndRightComponentsVisibility(1);
+        mBaiduMap.clear();
     }
 
 

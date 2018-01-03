@@ -15,10 +15,11 @@
         app:layout_constraintTop_toTopOf="parent">
         <ImageButton
             android:id="@+id/setting_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="25dp"
             android:background="@drawable/icon_back"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="12dp"
+            android:onClick="backToMap"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -84,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
-            android:text="账户与安全"
+            android:text="账户安全"
             android:textSize="18sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -230,6 +231,7 @@
         android:layout_height="50dp"
         android:gravity="center"
         android:background="@color/color_theme_inside"
+        android:onClick="logOut"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">

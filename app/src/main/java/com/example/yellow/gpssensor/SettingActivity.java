@@ -1,6 +1,8 @@
 package com.example.yellow.gpssensor;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 
 public class SettingActivity extends Activity {
     private String name;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +72,21 @@ public class SettingActivity extends Activity {
 
     public void updateUserInfo(String name,String character){
 
+    }
+
+    public void logOut(View view){
+        sharedPreferences=getApplicationContext().getSharedPreferences("MyPreference",MODE_PRIVATE);
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
+        Intent intent=new Intent(this,login.class);
+        startActivity(intent);
+        this.finish();
+    }
+    public void backToMap(View view){
+        Intent intent=new Intent(this,MapActivity.class);
+        startActivity(intent);
+        this.finish();
     }
 
 }

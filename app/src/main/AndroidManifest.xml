@@ -46,6 +46,9 @@
         <activity android:name=".GroupActivity"
             android:launchMode="singleInstance"/>
 
+        <activity android:name=".label"
+            android:launchMode="singleInstance"/>
+
         <activity android:name=".MapActivity"
             android:launchMode="singleInstance"/>
         <activity android:name=".SettingActivity"

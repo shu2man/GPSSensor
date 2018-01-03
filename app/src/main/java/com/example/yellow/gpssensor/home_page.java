@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,9 +22,11 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.widget.StackView;
 import android.widget.TextView;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,44 +37,13 @@ import java.util.Map;
  */
 
 public class home_page extends AppCompatActivity {
-    List<Item> li=new ArrayList<>();
-    List<Itemg> lig=new ArrayList<>();
-    FatherViewAdapter listAdapter = new FatherViewAdapter(this,li);
-    public class Item{
-        int img;
-        String  name;
-        String  time;
-        String  data;
-        String  zan;
-        String  tiaozhuan;
-        List<Iteml> ladapter;
-        List<Itemg> gadapter;
-    }
-    public class Iteml{
-        String name;
-        String comment;
-    }
-    public class Itemg{
-        int img;
-    }
+    private MYSQL sql;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
-        Thread thread1 = new Thread(){
-            @Override
-            public void run(){
-                init_girdview();
-            }
-        };
-        thread1.start();
-        Thread thread2 = new Thread(){
-            @Override
-            public void run(){
-                init_homepage();
-            }
-        };
-        thread2.start();
+        sql=new MYSQL(this);
+        init_homepage();
         StackView stackView =(StackView)findViewById(R.id.homepage_stackview);
         List<Map<String,Object>> listitems = new ArrayList<>();
         Map<String,Object> item1 = new HashMap<>();
@@ -90,52 +63,6 @@ public class home_page extends AppCompatActivity {
         listitems.add(item3);
         SimpleAdapter simpleAdapter = new SimpleAdapter(this,listitems,R.layout.stackview_layout,new String[]{"img"},new int[]{R.id.stackview_image});
         stackView.setAdapter(simpleAdapter);
-    }
-    private void init_girdview()
-    {
-        List<Map<String,Object>> listitems = new ArrayList<>();
-        Map<String,Object> item1 = new HashMap<>();
-        item1.put("img",R.mipmap.qq);
-        listitems.add(item1);
-        listitems.add(item1);
-        listitems.add(item1);
-        Map<String,Object> item2 = new HashMap<>();
-        item2.put("img",R.mipmap.weibo);
-        listitems.add(item2);
-        listitems.add(item2);
-        listitems.add(item2);
-        Map<String,Object> item3 = new HashMap<>();
-        item3.put("img",R.mipmap.weixin);
-        listitems.add(item3);
-        listitems.add(item3);
-        listitems.add(item3);
-        final GridView view_remen=(GridView)findViewById(R.id.homepage_rimen_grid);
-        SimpleAdapter gridAdapter = new SimpleAdapter(this,listitems,R.layout.item_with_me,
-                new String[]{"imn"},
-                new int[]{R.id.care_profile_photo});
-        view_remen.setAdapter(gridAdapter);
-        final ListView list_guanzhu=(ListView)findViewById(R.id.homepage_guanzhu_list);
-        Itemg ijij = new Itemg();
-        ijij.img=R.mipmap.weixin;
-        lig.add(ijij);
-        lig.add(ijij);
-        lig.add(ijij);
-        lig.add(ijij);
-        lig.add(ijij);
-        lig.add(ijij);
-        list_guanzhu.setAdapter(listAdapter);
-        Thread thread = new Thread(){
-            @Override
-            public void run(){
-                for(int i = 0 ; i < 5 ; i++){
-                    try {
-                        Thread.sleep(100);
-                    }catch (InterruptedException e){}
-                        mh.obtainMessage(233).sendToTarget();
-                }
-            }
-        };
-        thread.start();
     }
     private void init_homepage()
     {
@@ -161,21 +88,25 @@ public class home_page extends AppCompatActivity {
                 view_remen.setVisibility(View.INVISIBLE);
             }
         });
+        FatherViewAdapter guanzhu_adapter = new FatherViewAdapter(this,sql.select_guanzhu_all());
+        remenViewAdapter remen_adapter = new remenViewAdapter(this,sql.select_guanzhu_all());
+        view_remen.setAdapter(remen_adapter);
+        list_guanzhu.setAdapter(guanzhu_adapter);
     }
 
     public class FatherViewAdapter extends BaseAdapter {
 
         //数据源
-        private List<Item> mList = new ArrayList<>();
+        private Cursor mList;
 
         //列数
 
         private Context mContext;
 
-        public FatherViewAdapter(Context context, List<Item> list) {
+        public FatherViewAdapter(Context context,Cursor item) {
             super();
             this.mContext = context;
-            this.mList = list;
+            this.mList = item;
         }
 
         /**
@@ -186,7 +117,7 @@ public class home_page extends AppCompatActivity {
         @Override
         public int getCount() {
             try{
-                return mList.size();
+                return mList.getCount();
             }catch (Exception e){
                 return 0;
             }
@@ -202,8 +133,9 @@ public class home_page extends AppCompatActivity {
         }*/
 
         @Override
-        public Item getItem(int position) {
-            return mList.get(position);
+        public Cursor getItem(int position) {
+            mList.move(position);
+            return  mList;
         }
 
         @Override
@@ -222,33 +154,17 @@ public class home_page extends AppCompatActivity {
             }
             //更新数据源(核心)
             try{
-                holder.img.setBackgroundResource(getItem(position).img);
+                holder.img.setImageURI(Uri.parse(getItem(position).getString(2)));
+                holder.name.setText(sql.get_user_name(getItem(position).getString(1)));
+                holder.time.setText(getItem(position).getString(3));
+                holder.data.setText(getItem(position).getString(4));
+                holder.zan.setText(getItem(position).getString(5));
+                holder.tiaozhuan.setText(getItem(position).getString(6));
+                holder.gadapter.setmList(sql.select_pic(getItem(position).getString(7)));
+                holder.ladapter.setmList(sql.select_pinglun(getItem(position).getString(8)));
             }catch (Exception e){}
-            try{
-                holder.name.setText(getItem(position).name);
-            }catch (Exception e){}
-            try{
-                holder.time.setText(getItem(position).time);
-            }catch (Exception e){}
-            try{
-                holder.data.setText(getItem(position).data);
-            }catch (Exception e){}
-            try{
-                holder.zan.setText(getItem(position).zan);
-            }catch (Exception e){}
-            try{
-                holder.tiaozhuan.setText(getItem(position).tiaozhuan);
-            }catch (Exception e){}
-            try{
-                holder.ladapter.setmList(getItem(position).ladapter);
-            }catch (Exception e){}
-            try{
-                holder.gadapter.setmList(getItem(position).gadapter);
-            }catch (Exception e){}
-            try{
-                holder.gadapter.notifyDataSetChanged();
-                holder.ladapter.notifyDataSetChanged();
-            }catch (Exception e){}
+            holder.gadapter.notifyDataSetChanged();
+            holder.ladapter.notifyDataSetChanged();
             return convertView;
         }
 
@@ -285,7 +201,7 @@ public class home_page extends AppCompatActivity {
     public class ListViewAdapter extends BaseAdapter {
 
         //数据源
-        private List<Iteml> mList = new ArrayList<>();
+        private Cursor mList;
 
         private Context mContext;
 
@@ -294,26 +210,27 @@ public class home_page extends AppCompatActivity {
             this.mContext = context;
         }
 
-        public List<Iteml> getmList() {
+        public Cursor getmList() {
             return mList;
         }
 
-        public void setmList(List<Iteml> mList) {
+        public void setmList(Cursor mList) {
             this.mList = mList;
         }
 
         @Override
         public int getCount() {
             try{
-                return mList.size();
+                return mList.getCount();
             }catch (Exception e){
                 return 0;
             }
         }
 
         @Override
-        public Iteml getItem(int position) {
-            return mList.get(position);
+        public Cursor getItem(int position) {
+            mList.move(position);
+            return mList;
         }
 
         @Override
@@ -331,10 +248,8 @@ public class home_page extends AppCompatActivity {
                 holder = (ViewHolder) convertView.getTag();
             }
             try{
-                holder.comment.setText(getItem(position).comment);
-            }catch (Exception e){}
-            try{
-                holder.name.setText(getItem(position).name);
+                holder.comment.setText(getItem(position).getString(3));
+                holder.name.setText(getItem(position).getString(2));
             }catch (Exception e){}
             return convertView;
         }
@@ -354,7 +269,7 @@ public class home_page extends AppCompatActivity {
     public class GridViewAdapter extends BaseAdapter {
 
         //数据源
-        private List<Itemg> mList = new ArrayList<>();
+        private Cursor mList ;
 
         private Context mContext;
 
@@ -363,26 +278,27 @@ public class home_page extends AppCompatActivity {
             this.mContext = context;
         }
 
-        public List<Itemg> getmList() {
+        public Cursor getmList() {
             return mList;
         }
 
-        public void setmList(List<Itemg> mList) {
+        public void setmList(Cursor mList) {
             this.mList = mList;
         }
 
         @Override
         public int getCount() {
             try{
-                return mList.size();
+                return mList.getCount();
             }catch (Exception e){
                 return 0;
             }
         }
 
         @Override
-        public Itemg getItem(int position) {
-            return mList.get(position);
+        public Cursor getItem(int position) {
+            mList.move(position);
+            return mList;
         }
 
         @Override
@@ -400,7 +316,7 @@ public class home_page extends AppCompatActivity {
                 holder = (ViewHolder) convertView.getTag();
             }
             try{
-                holder.iv.setImageResource(getItem(position).img);
+                holder.iv.setImageURI(Uri.parse(getItem(position).getString(2)));
             }catch (Exception e){}
             return convertView;
         }
@@ -415,50 +331,110 @@ public class home_page extends AppCompatActivity {
             }
         }
     }
-    final Handler mh = new Handler(){
-        @Override
-        public void handleMessage(Message msg){
-            super.handleMessage(msg);
-            if(msg.what==233)
-            {
-                try{
-                    {
-                        List<Iteml> lil=new ArrayList<>();
-                        for(int k = 0 ; k < 15 ; k++)
-                        {
-                            Iteml iiii = new Iteml();
-                            iiii.name=Integer.toString(k);
-                            iiii.comment="sgdg";
-                            lil.add(iiii);
-                        }
-                        Item ii = new Item();
-                        ii.img=R.mipmap.weixin;
-                        ii.name="asasda";
-                        ii.ladapter=lil;
-                        ii.gadapter=lig;
-                        li.add(ii);
-                        li.add(ii);
-                        li.add(ii);
-                        li.add(ii);
-                        li.add(ii);
-                    }
-                    Item ii = new Item();
-                    ii.img=R.mipmap.qq;
-                    li.add(ii);
-                    listAdapter.notifyDataSetChanged();
-                }
-                catch (Exception e){}
-            }
-        }
-    };
 
     public void goToMap(View view){
         Intent intent=new Intent(this,MapActivity.class);
+        Intent this_intent = getIntent();
+        intent.putExtra("user",this_intent.getStringExtra("user"));
         startActivity(intent);
     }
     public void goToGroup(View view){
         Intent intent=new Intent(this,GroupActivity.class);
+        Intent this_intent = getIntent();
+        intent.putExtra("user",this_intent.getStringExtra("user"));
         startActivity(intent);
+    }
+
+    public class remenViewAdapter extends BaseAdapter {
+
+        //数据源
+        private Cursor mList;
+
+        //列数
+
+        private Context mContext;
+
+        public remenViewAdapter(Context context,Cursor item) {
+            super();
+            this.mContext = context;
+            this.mList = item;
+        }
+
+        /**
+         * 这部很重要
+         *(核心)
+         * @return listview的行数
+         */
+        @Override
+        public int getCount() {
+            try{
+                return mList.getCount();
+            }catch (Exception e){
+                return 0;
+            }
+        }
+        /*
+        @Override
+        public int getCount() {
+            int count = mList.size() / mColumn;
+            if (mList.size() % mColumn > 0) {
+                count++;
+            }
+            return count;
+        }*/
+
+        @Override
+        public Cursor getItem(int position) {
+            mList.move(position);
+            return  mList;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder holder;
+            if (convertView == null) {
+                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_hot, parent, false);
+                holder = new ViewHolder(convertView);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            //更新数据源(核心)
+
+            getItem(position);
+            String ss;
+            try {
+                ss=mList.getString(7);
+            }catch (Exception e){ss="0";}
+            Cursor c=sql.select_pic(ss);
+            c.moveToNext();
+            try{
+                holder.img.setImageURI(Uri.parse(c.getString(2)));
+                holder.icon.setImageURI(Uri.parse(mList.getString(2)));
+                holder.word.setText(mList.getString(4));
+                holder.zan.setText(mList.getString(5));
+            }catch (Exception e){}
+            return convertView;
+        }
+
+        class ViewHolder {
+            ImageView img;
+            ImageView icon;
+            TextView  word;
+            TextView  zan;
+
+            public ViewHolder(View view) {
+                img=(ImageView) findViewById(R.id.hot_item_picture);
+                icon=(ImageView) findViewById(R.id.hot_item_profile_photo);
+                word=(TextView) findViewById(R.id.hot_item_content_shortcut) ;
+                zan=(TextView) findViewById(R.id.hot_zan_num) ;
+                view.setTag(this);
+            }
+        }
     }
 }
 

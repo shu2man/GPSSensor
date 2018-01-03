@@ -1,6 +1,8 @@
 package com.example.yellow.gpssensor;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -8,6 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ProgressBar;
 
 public class welcome extends AppCompatActivity {
+    private SharedPreferences sharedPreferences;
+    private boolean isFirstLaunch;
+    private MYSQL sql;
+
     final private Handler welcome_bar_handler = new Handler(){
         @Override
         public void handleMessage(Message msg){
@@ -22,9 +28,15 @@ public class welcome extends AppCompatActivity {
                     try {
                         Thread.sleep(200);
                     }catch (InterruptedException e){}
-                    Intent intent =new Intent(welcome.this,login.class);
-                    startActivity(intent);
+                    if(isFirstLaunch){
+                        Intent intent =new Intent(welcome.this,login.class);
+                        startActivity(intent);
+                    }
+                    else{
+                        goToHome();
+                    }
                     welcome.this.finish();
+
                 }
             }
         }
@@ -51,6 +63,30 @@ public class welcome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
         welcome_bar_animation();
+        sql=new MYSQL(this);
+        checkShouldRegister();
+    }
+
+    public void checkShouldRegister(){
+        sharedPreferences=getApplicationContext().getSharedPreferences("MyPreference",MODE_PRIVATE);
+        isFirstLaunch=sharedPreferences.getBoolean("isFirstLaunch",true);
+        if(!isFirstLaunch){
+            DataShare ds=((DataShare)getApplicationContext());
+            ds.setUsername(sharedPreferences.getString("Username","游客"));
+            Cursor c=sql.select_user_by_name(ds.getUsername());
+            c.moveToNext();
+            ds.setUserid(c.getString(0));
+        }
+        else{
+            //Guide The User To Register In
+        }
+    }
+    public void goToHome(){
+        Intent intent = new Intent(this,home_page.class);
+        DataShare ds=((DataShare)getApplicationContext());
+        intent.putExtra("user",ds.getUserid());
+        startActivity(intent);
+        this.finish();
     }
 
 
