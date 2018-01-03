@@ -37,9 +37,11 @@
         <activity android:name=".home_page"
             android:launchMode="singleInstance"/>
 
-        <activity android:name=".login"/>
+        <activity android:name=".login"
+            android:launchMode="singleInstance"/>
 
-        <activity android:name=".ShareActivity"/>
+        <activity android:name=".ShareActivity"
+            android:launchMode="singleInstance"/>
 
         <activity android:name=".GroupActivity"
             android:launchMode="singleInstance"/>
