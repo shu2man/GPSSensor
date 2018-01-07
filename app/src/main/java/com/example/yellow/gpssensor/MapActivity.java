@@ -641,13 +641,14 @@ public class MapActivity extends AppCompatActivity {
     }
     public void drawTraceInit(){
         drawLatLngs=new ArrayList<>();
-        final BitmapDescriptor bitmap=BitmapDescriptorFactory.fromResource(R.drawable.red_dot);
+        //final BitmapDescriptor bitmap=BitmapDescriptorFactory.fromResource(R.drawable.red_dot);
         BaiduMap.OnMapClickListener listener=new BaiduMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 if(isDraw){
                     drawLatLngs.add(latLng);
-                    if (drawLatLngs.size() >= 2) {
+                    showDraw();
+/*                    if (drawLatLngs.size() >= 2) {
                         PolylineOptions ooPolyline = new PolylineOptions().width(10).color(0xAAFF0000).points(drawLatLngs);
                         mBaiduMap.clear();
                         mPolyline = (Polyline) mBaiduMap.addOverlay(ooPolyline);//显示当前位置，并时时动态的画出运动轨
@@ -656,7 +657,7 @@ public class MapActivity extends AppCompatActivity {
                         OverlayOptions poptions=new MarkerOptions().position(drawLatLngs.get(i)).icon(bitmap);
                         mBaiduMap.addOverlay(poptions);
                     }
-                    updateDrawInfo();
+                    updateDrawInfo();*/
                 }
             }
 
@@ -665,6 +666,20 @@ public class MapActivity extends AppCompatActivity {
                 return false;
             }
         };
+        mBaiduMap.setOnMapClickListener(listener);
+    }
+    public void showDraw(){
+        BitmapDescriptor bitmap=BitmapDescriptorFactory.fromResource(R.drawable.red_dot);
+        if (drawLatLngs.size() >= 2) {
+            PolylineOptions ooPolyline = new PolylineOptions().width(10).color(0xAAFF0000).points(drawLatLngs);
+            mBaiduMap.clear();
+            mPolyline = (Polyline) mBaiduMap.addOverlay(ooPolyline);//显示当前位置，并时时动态的画出运动轨
+        }
+        for(int i=0;i<drawLatLngs.size();i++){
+            OverlayOptions poptions=new MarkerOptions().position(drawLatLngs.get(i)).icon(bitmap);
+            mBaiduMap.addOverlay(poptions);
+        }
+        updateDrawInfo();
     }
     public void goToShareBtn(View view){
         goToShare("none");
@@ -686,29 +701,47 @@ public class MapActivity extends AppCompatActivity {
     }
     public void startDraw(View view){
         isDraw=true;
+        mBaiduMap.clear();
         drawTraceInit();
         setTopAndRightComponentsVisibility(2);
+        setTraceButtonVisibility(2);
     }
     public void finishDraw(View view){
         isDraw=false;
         Toast.makeText(this,"绘制的轨迹已经保存在个人中心啦",Toast.LENGTH_SHORT).show();
         setTopAndRightComponentsVisibility(1);
+        setTraceButtonVisibility(1);
         mBaiduMap.clear();
+        mBaiduMap.setOnMapClickListener(null);
         //save drawLatLngs
     }
     public void shareDraw(View view){
         isDraw=false;
         setTopAndRightComponentsVisibility(1);
+        setTraceButtonVisibility(1);
         //save drawLatLngs
         goToShare("draw");
     }
     public void undoADraw(View view){
         drawLatLngs.remove(drawLatLngs.size()-1);
+        showDraw();
     }
     public void cancelDraw(View view){
         isDraw=false;
+        drawLatLngs.clear();
         setTopAndRightComponentsVisibility(1);
         mBaiduMap.clear();
+        mBaiduMap.setOnMapClickListener(null);
+        setTraceButtonVisibility(1);
+    }
+    public void setTraceButtonVisibility(int mode){//1-visible,normal,2-gone-draw
+        LinearLayout layout=(LinearLayout)findViewById(R.id.record_trace_btn_layout);
+        if(mode==1){
+            layout.setVisibility(View.VISIBLE);
+        }
+        else if(mode==2){
+            layout.setVisibility(View.GONE);
+        }
     }
 
 

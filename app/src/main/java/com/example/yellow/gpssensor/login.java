@@ -140,8 +140,19 @@ public class login extends AppCompatActivity {
             Cursor c=sql.select_user_by_name(et_name.getText().toString());
             if(c.moveToNext()){
                 if(c.getString(2).equals(et_new.getText().toString())){
+                    SharedPreferences.Editor editor=sharedPreferences.edit();
+                    editor.putBoolean("isFirstLaunch",false);
+                    editor.putString("Password",et_new.getText().toString());
+                    editor.putString("Username",et_name.getText().toString());
+                    editor.apply();
                     goToHome();
                 }
+                else{
+                    Toast.makeText(this,"密码错误",Toast.LENGTH_SHORT).show();
+                }
+            }
+            else{
+                Toast.makeText(this,"用户名不存在",Toast.LENGTH_SHORT).show();
             }
         }
 
