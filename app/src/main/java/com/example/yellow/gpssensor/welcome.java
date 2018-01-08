@@ -9,10 +9,18 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ProgressBar;
 
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+
 public class welcome extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private boolean isFirstLaunch;
     private MYSQL sql;
+
+    //登录微信的应用ID
+    private static final String APP_ID="wxd8e1494ccbebbd1f";
+    //和微信通信的openapi接口
+    private IWXAPI api;
 
     final private Handler welcome_bar_handler = new Handler(){
         @Override
@@ -64,6 +72,10 @@ public class welcome extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
         welcome_bar_animation();
         sql=new MYSQL(this);
+
+        api= WXAPIFactory.createWXAPI(this,APP_ID,true);
+        api.registerApp(APP_ID);//注册到微信
+
         checkShouldRegister();
     }
 

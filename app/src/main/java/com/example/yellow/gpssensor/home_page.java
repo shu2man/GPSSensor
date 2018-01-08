@@ -26,7 +26,14 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.StackView;
 import android.widget.TextView;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.youth.banner.Banner;
+import com.youth.banner.Transformer;
+import com.youth.banner.loader.ImageLoader;
+
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +51,40 @@ public class home_page extends AppCompatActivity {
         setContentView(R.layout.activity_home_page);
         sql=new MYSQL(this);
         init_homepage();
+        initBanner();
+
+    }
+    public void initBanner(){
+        List<URL> images=new ArrayList<>();
+        try{
+            URL u1=new URL("http://m.qpic.cn/psb?/V13oePxu4IH3ty/*5PImr7SOBIiSnW5RuGul4EfUSt4yV.GQUC32.OVXIM!/b/dPIAAAAAAAAA&bo=YAWAAgAAAAARB9c!&rf=viewer_4");
+            URL u2=new URL("http://m.qpic.cn/psb?/V13oePxu4IH3ty/WzCI90*.j*AgMLVDF96U2PIdOuVDUXwJfYQUMNMA37g!/b/dPIAAAAAAAAA&bo=1AH6AAAAAAARFw8!&rf=viewer_4");
+            URL u3=new URL("http://m.qpic.cn/psb?/V13oePxu4IH3ty/T9fsFE2QmpAuiZ8UUeuSvcMOvEeF7UMMANhCFxD3hsg!/b/dPMAAAAAAAAA&bo=rwH0AAAAAAARB2o!&rf=viewer_4");
+            URL u4=new URL("http://m.qpic.cn/psb?/V13oePxu4IH3ty/WbEaxDosVvfA5hk4m*niR0YmHwtg4vpnfE9yvBwIYbs!/b/dGUBAAAAAAAA&bo=WAJSAQAAAAARFyk!&rf=viewer_4");
+            URL u5=new URL("http://m.qpic.cn/psb?/V13oePxu4IH3ty/Fv8TK9UCSBuPlaz9x8AhEViPoDXi3su5hkr4EQBCLu0!/b/dD8BAAAAAAAA&bo=*AOAAgAAAAARF10!&rf=viewer_4");
+
+            images.add(u1);
+            images.add(u2);
+            images.add(u3);
+            images.add(u4);
+            images.add(u5);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        Banner banner = (Banner) findViewById(R.id.banner);
+        //设置图片加载器
+        banner.setImageLoader(new GlideImageLoader());
+        //设置图片集合
+        banner.setImages(images);
+        //设置间隔时间
+        banner.setDelayTime(3000);
+        //设置动画样式
+        banner.setBannerAnimation(Transformer.Tablet);
+        //banner设置方法全部调用完毕时最后调用
+        banner.start();
+    }
+    public void initStackView(){
         StackView stackView =(StackView)findViewById(R.id.homepage_stackview);
         List<Map<String,Object>> listitems = new ArrayList<>();
         Map<String,Object> item1 = new HashMap<>();
@@ -64,6 +105,7 @@ public class home_page extends AppCompatActivity {
         SimpleAdapter simpleAdapter = new SimpleAdapter(this,listitems,R.layout.stackview_layout,new String[]{"img"},new int[]{R.id.stackview_image});
         stackView.setAdapter(simpleAdapter);
     }
+
     private void init_homepage()
     {
         final TextView remen= (TextView)findViewById(R.id.homepage_remen_text);
@@ -346,12 +388,9 @@ public class home_page extends AppCompatActivity {
     }
 
     public class remenViewAdapter extends BaseAdapter {
-
         //数据源
         private Cursor mList;
-
         //列数
-
         private Context mContext;
 
         public remenViewAdapter(Context context,Cursor item) {
@@ -436,5 +475,41 @@ public class home_page extends AppCompatActivity {
             }
         }
     }
+
+
+
+    public class GlideImageLoader extends ImageLoader {
+        @Override
+        public void displayImage(Context context, Object path, ImageView imageView) {
+            /**
+             注意：
+             1.图片加载器由自己选择，这里不限制，只是提供几种使用方法
+             2.返回的图片路径为Object类型，由于不能确定你到底使用的那种图片加载器，
+             传输的到的是什么格式，那么这种就使用Object接收和返回，你只需要强转成你传输的类型就行，
+             切记不要胡乱强转！
+             */
+
+            //Glide 加载图片简单用法
+            //Glide.with(context).load(path).into(imageView);
+
+            //Picasso 加载图片简单用法
+            //Picasso.with(context).load(path).into(imageView);
+
+            //用fresco加载图片简单用法，记得要写下面的createImageView方法
+            Uri uri = Uri.parse(path.toString());
+            imageView.setImageURI(uri);
+        }
+
+        //提供createImageView 方法，如果不用可以不重写这个方法，主要是方便自定义ImageView的创建
+        @Override
+        public ImageView createImageView(Context context) {
+            //使用fresco，需要创建它提供的ImageView，当然你也可以用自己自定义的具有图片加载功能的ImageView
+            //SimpleDraweeView simpleDraweeView=new SimpleDraweeView(context);
+            //return simpleDraweeView;
+            Fresco.initialize(context);
+            return new SimpleDraweeView(context);
+        }
+    }
+
 }
 

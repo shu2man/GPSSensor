@@ -24,6 +24,8 @@ import java.util.*;
  * Created by Yellow on 2018-1-2.
  */
 
+//AppSecret: 71d51701664b52196a58c0d3a3ce37c9
+
 public class ShareActivity extends Activity {
     private String type;
     private String lastActivity;
@@ -40,6 +42,7 @@ public class ShareActivity extends Activity {
         setContentView(R.layout.activity_share);
         type=getIntent().getStringExtra("type");
         lastActivity=getIntent().getStringExtra("last");
+        if(lastActivity==null) lastActivity="";
 
         content=(EditText)findViewById(R.id.share_edit_text);
 
@@ -59,7 +62,7 @@ public class ShareActivity extends Activity {
             case R.id.share_others_pengyouquang:
                 String contentText=content.getText().toString();
                 api= WXAPIFactory.createWXAPI(this,APP_ID,true);
-                api.registerApp(APP_ID);//注册到微信
+                //api.registerApp(APP_ID);//注册到微信
                 if(!api.isWXAppInstalled()){
                     Toast.makeText(this,"未检测到微信客户端",Toast.LENGTH_SHORT).show();
                     return;
@@ -70,15 +73,13 @@ public class ShareActivity extends Activity {
 
                 //要发送的图片
                 Bitmap bmp= BitmapFactory.decodeResource(getResources(),R.drawable.jiqu_hd);
-                Bitmap bmp2= BitmapFactory.decodeResource(getResources(),R.drawable.jiqu_hd);
                 //初始化WXImageObject对象
                 WXImageObject imageObject=new WXImageObject(bmp);
                 //初始化WXMediaMessage对象
                 WXMediaMessage msg=new WXMediaMessage();
-                msg.mediaObject=textObject;
+                msg.mediaObject=imageObject;
                 msg.description=contentText;
-                msg.setThumbImage(bmp);
-
+                //msg.setThumbImage(bmp);
 
                 //构造Req,微信处理完返回应用
                 SendMessageToWX.Req req=new SendMessageToWX.Req();
