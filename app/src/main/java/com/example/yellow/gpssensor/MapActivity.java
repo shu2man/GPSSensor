@@ -10,6 +10,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
@@ -747,6 +748,20 @@ public class MapActivity extends AppCompatActivity {
             layout.setVisibility(View.GONE);
         }
     }
+
+    public void snapShot(){
+        mBaiduMap.setMapStatus(MapStatusUpdateFactory. newLatLng(trackLatLngs.get(trackLatLngs.size()-1)));
+        BaiduMap.SnapshotReadyCallback callback=new BaiduMap.SnapshotReadyCallback() {
+            @Override
+            public void onSnapshotReady(Bitmap bitmap) {
+                DataShare ds=((DataShare) getApplicationContext());
+                ds.setSnapShot(bitmap);
+                //Toast.makeText(MapActivity.this,"截图成功",Toast.LENGTH_SHORT).show();
+            }
+        };
+        mBaiduMap.snapshot(callback);
+    }
+
 
 
     public void goToSetting(View view){

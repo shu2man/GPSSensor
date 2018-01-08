@@ -1,6 +1,7 @@
 package com.example.yellow.gpssensor;
 
 import android.app.Application;
+import android.graphics.Bitmap;
 
 /**
  * Created by Yellow on 2018-1-3.
@@ -9,6 +10,8 @@ import android.app.Application;
 public class DataShare extends Application {
     private String username;
     private String userid;
+
+    private Bitmap snapShot;
 
     public DataShare(){
 
@@ -24,5 +27,11 @@ public class DataShare extends Application {
     }
     public String getUsername(){
         return username;
+    }
+    public void setSnapShot(Bitmap ss){
+        snapShot=ss;
+    }
+    public Bitmap getSnapShot(){
+        return snapShot;
     }
 }
