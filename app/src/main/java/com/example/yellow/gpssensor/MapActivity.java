@@ -610,6 +610,7 @@ public class MapActivity extends AppCompatActivity {
     public void cancelTrace(View view){
         setVisibilityInsideTraceInfo(0);//show countings and hide btns
         setTopAndRightComponentsVisibility(1);
+        trackLatLngs.clear();
         mBaiduMap.clear();
         //no need to save in case of cancel
     }
@@ -618,6 +619,7 @@ public class MapActivity extends AppCompatActivity {
         setVisibilityInsideTraceInfo(0);
         setTopAndRightComponentsVisibility(1);
         Toast.makeText(this, "轨迹已经保存到个人中心啦", Toast.LENGTH_SHORT).show();
+        trackLatLngs.clear();
         mBaiduMap.clear();
     }
     public void shareTrace(View view){
@@ -723,8 +725,10 @@ public class MapActivity extends AppCompatActivity {
         goToShare("draw");
     }
     public void undoADraw(View view){
-        drawLatLngs.remove(drawLatLngs.size()-1);
-        showDraw();
+        if(drawLatLngs.size()>=2){
+            drawLatLngs.remove(drawLatLngs.size()-1);
+            showDraw();
+        }
     }
     public void cancelDraw(View view){
         isDraw=false;

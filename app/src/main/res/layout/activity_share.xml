@@ -36,6 +36,7 @@
             android:layout_marginEnd="15dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/bg_frame"
+            android:onClick="share"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
@@ -53,7 +54,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/share_top_btn_container">
 
-        <TextView
+        <EditText
             android:id="@+id/share_edit_text"
             android:layout_width="0dp"
             android:layout_height="100dp"
@@ -117,6 +118,7 @@
         android:layout_height="75dp"
         android:layout_marginTop="76dp"
         android:background="@drawable/weixin_pengyouquang"
+        android:onClick="share"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/share_content_container"

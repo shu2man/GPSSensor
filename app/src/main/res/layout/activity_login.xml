@@ -143,19 +143,21 @@
             app:layout_constraintTop_toTopOf="@+id/login_weixin_image"
             android:layout_marginEnd="24dp" />
 
-        <ImageView
+        <ImageButton
             android:id="@+id/login_weixin_image"
             android:layout_width="55dp"
             android:layout_height="55dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="16dp"
-            android:src="@mipmap/weixin"
+            android:background="@mipmap/weixin"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:onClick="RegisterByWeiXin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/login_others_text"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp" />
+            />
 
         <ImageView
             android:id="@+id/login_weibo_image"

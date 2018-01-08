@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,11 +21,25 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tencent.mm.opensdk.modelmsg.SendAuth;
+import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.opensdk.modelmsg.WXTextObject;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+
+import org.w3c.dom.Text;
+
 public class login extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private boolean isFirstLaunch;
     private MYSQL sql;
     private int SignMode=1;//默认1-登录模式，2-注册模式
+
+    //登录微信的应用ID
+    private static final String APP_ID="wxd8e1494ccbebbd1f";
+    //和微信通信的openapi接口
+    private IWXAPI api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,11 +95,16 @@ public class login extends AppCompatActivity {
         ConstraintLayout CL1=(ConstraintLayout)findViewById(R.id.login_alternative_container);
         TextView tv=(TextView)findViewById(R.id.confirm_password_text);
         EditText et=(EditText)findViewById(R.id.confirm_password_edit);
+        EditText etname=(EditText)findViewById(R.id.login_name_edit);
         Button btn=(Button)findViewById(R.id.login_btn);
         if(mode==1){
             CL1.setVisibility(View.VISIBLE);
             tv.setVisibility(View.GONE);
             et.setVisibility(View.GONE);
+            //默认输入上次登录的用户名
+            String str=sharedPreferences.getString("Username","游客");
+            if(!str.equals("游客")) etname.setText(str);
+
             btn.setText("登录");
         }
         else if(mode==2){
@@ -155,6 +175,35 @@ public class login extends AppCompatActivity {
                 Toast.makeText(this,"用户名不存在",Toast.LENGTH_SHORT).show();
             }
         }
+
+    }
+    public void RegisterByWeiXin(View view){
+        Toast.makeText(this,"--还没申请到登录权限(ㄒoㄒ)--",Toast.LENGTH_SHORT).show();
+
+/*        //获取微信实例
+        api= WXAPIFactory.createWXAPI(this,APP_ID,true);
+        api.registerApp(APP_ID);//注册到微信
+
+        String text="登录";
+        WXTextObject textObject=new WXTextObject();
+        textObject.text=text;
+
+        WXMediaMessage msg=new WXMediaMessage();
+        msg.mediaObject=textObject;
+        msg.description=text;
+
+        //构造Req,微信处理完返回应用
+        SendMessageToWX.Req req=new SendMessageToWX.Req();
+        //transaction用于唯一标识一个字段
+        req.transaction=String.valueOf(System.currentTimeMillis());
+        req.message=msg;
+
+        //调用api发送消息到微信
+        api.sendReq(req);
+
+        final SendAuth.Req SAreq=new SendAuth.Req();
+        SAreq.scope="snsapi_userinfo";
+        SAreq.state="wechat_state_login";*/
 
     }
 
