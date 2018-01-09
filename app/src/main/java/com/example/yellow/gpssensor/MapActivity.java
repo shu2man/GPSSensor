@@ -779,8 +779,10 @@ public class MapActivity extends AppCompatActivity {
                 //File f=new File(Environment.getExternalStorageDirectory(),"/JiQu/traceShot");
                 path=path+"/JiQu/traceShot";
                 File file=new File(path);
+                Toast.makeText(MapActivity.this,"--保存截图--",Toast.LENGTH_SHORT).show();
                 try{
-                    while(!file.exists()) file.mkdir();
+                    boolean b;
+                    if(!file.exists()) b=file.mkdirs();
                     File filepng=new File(format.format(date)+".png");
                     FileOutputStream out=new FileOutputStream(file+"/"+filepng);//FileOutputStream
                     if(bitmap.compress(Bitmap.CompressFormat.PNG,60,out)){
