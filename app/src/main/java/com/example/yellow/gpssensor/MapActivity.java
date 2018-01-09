@@ -97,11 +97,13 @@ public class MapActivity extends AppCompatActivity {
     private long startTime;
     private double localCurrentSpeed=0;
     private LatLng lastPoint;
-    private List<LatLng> trackLatLngs;
-    private List<LatLng> drawLatLngs;
+    private ArrayList<LatLng> trackLatLngs;
+    private ArrayList<LatLng> drawLatLngs;
     public Trace mTrace;
     public LBSTraceClient mTraceClient;
     public Polyline mPolyline;
+
+    private MYSQL sql;
 
     private boolean HeatMode=false;
     private boolean TrafficMode=false;
@@ -138,6 +140,8 @@ public class MapActivity extends AppCompatActivity {
         mLocationClient = new LocationClient(getApplicationContext());//声明LocationClient类
         mLocationClient.registerLocationListener(myListener);//注册监听函数
         mMarker=BitmapDescriptorFactory.fromResource(R.drawable.loc_current32red);
+
+        sql=new MYSQL(this);
 
         initLoc();
 
@@ -618,6 +622,8 @@ public class MapActivity extends AppCompatActivity {
         }
     }
     public void cancelTrace(View view){
+        stopTrace();
+
         setVisibilityInsideTraceInfo(0);//show countings and hide btns
         setTopAndRightComponentsVisibility(1);
         trackLatLngs.clear();
@@ -625,19 +631,29 @@ public class MapActivity extends AppCompatActivity {
         //no need to save in case of cancel
     }
     public void finishTrace(View view){
-        //save traceLatLngs
+        stopTrace();
+
         setVisibilityInsideTraceInfo(0);
         setTopAndRightComponentsVisibility(1);
-        snapShot();
+
+        String stime=snapShot();
+        DataShare ds=((DataShare)getApplicationContext());
+        sql.save_drawLatLngs(ds.getUserid(),trackLatLngs,stime);
+
         Toast.makeText(this, "轨迹已经保存到个人中心啦", Toast.LENGTH_SHORT).show();
         trackLatLngs.clear();
         mBaiduMap.clear();
     }
     public void shareTrace(View view){
-        //save traceLatLngs before share
+        stopTrace();
+
         setVisibilityInsideTraceInfo(0);
         setTopAndRightComponentsVisibility(1);
-        snapShot();
+
+        String stime=snapShot();
+        DataShare ds=((DataShare)getApplicationContext());
+        sql.save_drawLatLngs(ds.getUserid(),trackLatLngs,stime);
+
         goToShare("trace");
         trackLatLngs.clear();
         mBaiduMap.clear();
@@ -663,16 +679,6 @@ public class MapActivity extends AppCompatActivity {
                 if(isDraw){
                     drawLatLngs.add(latLng);
                     showDraw();
-/*                    if (drawLatLngs.size() >= 2) {
-                        PolylineOptions ooPolyline = new PolylineOptions().width(10).color(0xAAFF0000).points(drawLatLngs);
-                        mBaiduMap.clear();
-                        mPolyline = (Polyline) mBaiduMap.addOverlay(ooPolyline);//显示当前位置，并时时动态的画出运动轨
-                    }
-                    for(int i=0;i<drawLatLngs.size();i++){
-                        OverlayOptions poptions=new MarkerOptions().position(drawLatLngs.get(i)).icon(bitmap);
-                        mBaiduMap.addOverlay(poptions);
-                    }
-                    updateDrawInfo();*/
                 }
             }
 
@@ -723,21 +729,29 @@ public class MapActivity extends AppCompatActivity {
     }
     public void finishDraw(View view){
         isDraw=false;
-        snapShot();
-        //Toast.makeText(this,"绘制的轨迹已经保存在个人中心啦",Toast.LENGTH_SHORT).show();
+
+        String stime=snapShot();
+        DataShare ds=((DataShare)getApplicationContext());
+        sql.save_drawLatLngs(ds.getUserid(),trackLatLngs,stime);
+
+        Toast.makeText(this,"绘制的轨迹已经保存在个人中心啦",Toast.LENGTH_SHORT).show();
         setTopAndRightComponentsVisibility(1);
         setTraceButtonVisibility(1);
         drawLatLngs.clear();
         mBaiduMap.clear();
         mBaiduMap.setOnMapClickListener(null);
+
         //save drawLatLngs
     }
     public void shareDraw(View view){
         isDraw=false;
         setTopAndRightComponentsVisibility(1);
         setTraceButtonVisibility(1);
-        //save drawLatLngs
-        snapShot();
+
+        String stime=snapShot();
+        DataShare ds=((DataShare)getApplicationContext());
+        sql.save_drawLatLngs(ds.getUserid(),trackLatLngs,stime);
+
         goToShare("draw");
         drawLatLngs.clear();
         mBaiduMap.clear();
@@ -766,31 +780,32 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
-    public void snapShot(){
+    public String snapShot(){
         //mBaiduMap.setMapStatus(MapStatusUpdateFactory. newLatLng(trackLatLngs.get(trackLatLngs.size()-1)));
+        final SimpleDateFormat format=new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
+        final Date date=new Date(System.currentTimeMillis());
         BaiduMap.SnapshotReadyCallback callback=new BaiduMap.SnapshotReadyCallback() {
             @Override
             public void onSnapshotReady(Bitmap bitmap) {
                 DataShare ds=((DataShare) getApplicationContext());
                 ds.setSnapShot(bitmap);
-                SimpleDateFormat format=new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
-                Date date=new Date(System.currentTimeMillis());
                 String path=Environment.getExternalStorageDirectory().getPath();
                 //File f=new File(Environment.getExternalStorageDirectory(),"/JiQu/traceShot");
                 path=path+"/JiQu/traceShot";
                 File file=new File(path);
-                Toast.makeText(MapActivity.this,"--保存截图--",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MapActivity.this,"--生成截图--",Toast.LENGTH_SHORT).show();
                 try{
                     boolean b;
-                    if(!file.exists()) b=file.mkdirs();
+                    if(!file.exists()) b=file.mkdirs();//不要用mkdir，被坑了一晚上
                     File filepng=new File(format.format(date)+".png");
                     FileOutputStream out=new FileOutputStream(file+"/"+filepng);//FileOutputStream
-                    if(bitmap.compress(Bitmap.CompressFormat.PNG,60,out)){
+                    if(bitmap.compress(Bitmap.CompressFormat.PNG,50,out)){
                         out.flush();
                         out.close();
-                        Toast.makeText(MapActivity.this,"截图成功",Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MapActivity.this,"截图成功",Toast.LENGTH_SHORT).show();
                     }
                     ds.setPath(path);
+
                 }catch (Exception e){
                     Toast.makeText(MapActivity.this,"SnapShot Fail\n"+path+"\n"+e.getMessage(),Toast.LENGTH_LONG).show();
                     e.printStackTrace();
@@ -798,6 +813,7 @@ public class MapActivity extends AppCompatActivity {
             }
         };
         mBaiduMap.snapshot(callback);
+        return format.format(date);
     }
 
 
