@@ -2,9 +2,14 @@ package com.example.yellow.gpssensor;
 //debug-SHA1: 0C:18:37:35:DE:B1:54:97:EE:3B:DB:D7:4F:2B:74:C3:6C:45:F9:C5
 //release-SHA1: 92:7E:2D:91:E3:D9:F6:59:0E:13:0F:62:25:CF:C9:B4:5C:08:A1:60
 //service-id:153058
+import java.io.File;
+import java.io.FileOutputStream;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import android.Manifest;
 import android.app.Activity;
@@ -12,6 +17,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.Settings;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -108,10 +115,12 @@ public class MapActivity extends AppCompatActivity {
     private static final int REQUEST_ACCESS_COARSE_LOCATION=1;
     private static final int REQUEST_ACCESS_FINE_LOCATION=2;
     private static final int REQUEST_INTERNET=3;
+    private static final int REQUEST_WRITE_EXTERNAL_STORAGE=4;
     private static String[] PERMISSION_LOCATION={
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.INTERNET
+            Manifest.permission.INTERNET,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
     @Override
@@ -140,9 +149,9 @@ public class MapActivity extends AppCompatActivity {
     }
     public void verifyPermission(Activity activity){
         try{
-            int permission= ActivityCompat.checkSelfPermission(activity,"android.permission.ACCESS_COARSE_LOCATION");
+            int permission= ActivityCompat.checkSelfPermission(activity,PERMISSION_LOCATION[3]);
             if(permission!= PackageManager.PERMISSION_GRANTED){
-                ActivityCompat.requestPermissions(activity,PERMISSION_LOCATION,1);
+                ActivityCompat.requestPermissions(this,PERMISSION_LOCATION,1);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -619,6 +628,7 @@ public class MapActivity extends AppCompatActivity {
         //save traceLatLngs
         setVisibilityInsideTraceInfo(0);
         setTopAndRightComponentsVisibility(1);
+        snapShot();
         Toast.makeText(this, "轨迹已经保存到个人中心啦", Toast.LENGTH_SHORT).show();
         trackLatLngs.clear();
         mBaiduMap.clear();
@@ -627,7 +637,9 @@ public class MapActivity extends AppCompatActivity {
         //save traceLatLngs before share
         setVisibilityInsideTraceInfo(0);
         setTopAndRightComponentsVisibility(1);
+        snapShot();
         goToShare("trace");
+        trackLatLngs.clear();
         mBaiduMap.clear();
     }
     public String getTimeHMSFormat(long t){
@@ -711,9 +723,11 @@ public class MapActivity extends AppCompatActivity {
     }
     public void finishDraw(View view){
         isDraw=false;
-        Toast.makeText(this,"绘制的轨迹已经保存在个人中心啦",Toast.LENGTH_SHORT).show();
+        snapShot();
+        //Toast.makeText(this,"绘制的轨迹已经保存在个人中心啦",Toast.LENGTH_SHORT).show();
         setTopAndRightComponentsVisibility(1);
         setTraceButtonVisibility(1);
+        drawLatLngs.clear();
         mBaiduMap.clear();
         mBaiduMap.setOnMapClickListener(null);
         //save drawLatLngs
@@ -723,7 +737,10 @@ public class MapActivity extends AppCompatActivity {
         setTopAndRightComponentsVisibility(1);
         setTraceButtonVisibility(1);
         //save drawLatLngs
+        snapShot();
         goToShare("draw");
+        drawLatLngs.clear();
+        mBaiduMap.clear();
     }
     public void undoADraw(View view){
         if(drawLatLngs.size()>=2){
@@ -750,13 +767,32 @@ public class MapActivity extends AppCompatActivity {
     }
 
     public void snapShot(){
-        mBaiduMap.setMapStatus(MapStatusUpdateFactory. newLatLng(trackLatLngs.get(trackLatLngs.size()-1)));
+        //mBaiduMap.setMapStatus(MapStatusUpdateFactory. newLatLng(trackLatLngs.get(trackLatLngs.size()-1)));
         BaiduMap.SnapshotReadyCallback callback=new BaiduMap.SnapshotReadyCallback() {
             @Override
             public void onSnapshotReady(Bitmap bitmap) {
                 DataShare ds=((DataShare) getApplicationContext());
                 ds.setSnapShot(bitmap);
-                //Toast.makeText(MapActivity.this,"截图成功",Toast.LENGTH_SHORT).show();
+                SimpleDateFormat format=new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
+                Date date=new Date(System.currentTimeMillis());
+                String path=Environment.getExternalStorageDirectory().getPath();
+                //File f=new File(Environment.getExternalStorageDirectory(),"/JiQu/traceShot");
+                path=path+"/JiQu/traceShot";
+                File file=new File(path);
+                try{
+                    while(!file.exists()) file.mkdir();
+                    File filepng=new File(format.format(date)+".png");
+                    FileOutputStream out=new FileOutputStream(file+"/"+filepng);//FileOutputStream
+                    if(bitmap.compress(Bitmap.CompressFormat.PNG,60,out)){
+                        out.flush();
+                        out.close();
+                        Toast.makeText(MapActivity.this,"截图成功",Toast.LENGTH_SHORT).show();
+                    }
+                    ds.setPath(path);
+                }catch (Exception e){
+                    Toast.makeText(MapActivity.this,"SnapShot Fail\n"+path+"\n"+e.getMessage(),Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
             }
         };
         mBaiduMap.snapshot(callback);

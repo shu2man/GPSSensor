@@ -19,7 +19,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <!-- 访问网络，网络定位需要上网-->
     <uses-permission android:name="android.permission.INTERNET"/>
-    <!-- SD卡读取权限，用于写入对象存储BOS数据-->
 
     <application
         android:allowBackup="true"

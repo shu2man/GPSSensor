@@ -12,6 +12,7 @@ public class DataShare extends Application {
     private String userid;
 
     private Bitmap snapShot;
+    private String path;
 
     public DataShare(){
 
@@ -33,5 +34,11 @@ public class DataShare extends Application {
     }
     public Bitmap getSnapShot(){
         return snapShot;
+    }
+    public void setPath(String p){
+        path=p;
+    }
+    public String getPath(){
+        return path;
     }
 }
