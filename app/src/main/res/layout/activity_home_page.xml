@@ -135,6 +135,7 @@
             android:layout_height="28dp"
             android:scaleType="fitCenter"
             android:src="@drawable/icon_me"
+            android:onClick="goToI"
             android:background="#00000000"/>
     </LinearLayout>
     <LinearLayout

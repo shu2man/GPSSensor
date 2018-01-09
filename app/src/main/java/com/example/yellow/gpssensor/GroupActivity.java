@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by asus2 on 2017/12/31.
@@ -37,6 +41,14 @@ public class GroupActivity extends AppCompatActivity {
     }
     private void init_group()
     {
+        CircleImageView icon = (CircleImageView)findViewById(R.id.group_profile_photo);
+        TextView name = (TextView)findViewById(R.id.group_title_name);
+        DataShare ds = ((DataShare)getApplicationContext());
+        String id = ds.getUserid();
+        Cursor c = sql.select_user(id);
+        c.moveToNext();
+        icon.setImageURI(Uri.parse(c.getString(3)));
+        name.setText(c.getString(1));
         final TextView dongtai_text = (TextView)findViewById(R.id.group_title_dongtai);
         final TextView withme_text = (TextView)findViewById(R.id.group_title_withme);
         final TextView sixin_text = (TextView)findViewById(R.id.group_title_sixin);
@@ -81,8 +93,6 @@ public class GroupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(GroupActivity.this,ShareActivity.class);
-                Intent this_intent = getIntent();
-                intent.putExtra("user",this_intent.getStringExtra("user"));
                 startActivity(intent);
             }
         });
@@ -95,16 +105,20 @@ public class GroupActivity extends AppCompatActivity {
         ListView dongtai_view = (ListView) findViewById(R.id.group_list_dongtai);
         ListView withme_view = (ListView) findViewById(R.id.group_list_withme);
         ListView sixin_view = (ListView) findViewById(R.id.group_list_sixin);
-        FatherViewAdapter dongtai_adapter = new FatherViewAdapter(this,sql.select_guanzhu_all());
+        FatherViewAdapter dongtai_adapter = new FatherViewAdapter(this,null);
         Intent intentin = getIntent();
         DataShare ds=((DataShare)getApplicationContext());
         final ChatViewAdapter sixin_adapter = new ChatViewAdapter(this,sql.get_chat_list(ds.getUserid()));//intentin.getStringExtra("user")
         dongtai_view.setAdapter(dongtai_adapter);
+        dongtai_adapter.mList=sql.select_guanzhu_all();
+        dongtai_adapter.notifyDataSetChanged();
         sixin_view.setAdapter(sixin_adapter);
+        sixin_adapter.notifyDataSetChanged();
         sixin_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor c = sixin_adapter.mList;
+                c.moveToFirst();
                 c.move(position);
                 Intent in=new Intent(GroupActivity.this,ChatActivity.class);
                 in.putExtra("user_id",c.getString(1));
@@ -113,17 +127,26 @@ public class GroupActivity extends AppCompatActivity {
             }
         });
     }
+    public void goToI(View view){
+        Intent intent=new Intent(this,I_Activity.class);
+        Intent this_intent = getIntent();
+        intent.putExtra("user",this_intent.getStringExtra("user"));
+        startActivity(intent);
+        this.finish();
+    }
     public void goToMap(View view){
         Intent intent=new Intent(this,MapActivity.class);
         Intent this_intent = getIntent();
         intent.putExtra("user",this_intent.getStringExtra("user"));
         startActivity(intent);
+        this.finish();
     }
     public void goToHome(View view){
         Intent intent=new Intent(this,home_page.class);
         Intent this_intent = getIntent();
         intent.putExtra("user",this_intent.getStringExtra("user"));
         startActivity(intent);
+        this.finish();
     }
     public class FatherViewAdapter extends BaseAdapter {
 
@@ -162,11 +185,30 @@ public class GroupActivity extends AppCompatActivity {
             }
             return count;
         }*/
-
+        private class iitem{
+            String l1;
+            String l2;
+            String l3;
+            String l4;
+            String l5;
+            String l6;
+            String l7;
+            String l8;
+        }
         @Override
-        public Cursor getItem(int position) {
+        public iitem getItem(int position) {
+            mList.moveToFirst();
             mList.move(position);
-            return  mList;
+            iitem i=new iitem();
+            i.l1=mList.getString(2);
+            i.l2=mList.getString(1);
+            i.l3=mList.getString(3);
+            i.l4=mList.getString(4);
+            i.l5=mList.getString(5);
+            i.l6=mList.getString(6);
+            i.l7=mList.getString(7);
+            i.l8=mList.getString(7);
+            return i;
         }
 
         @Override
@@ -183,19 +225,20 @@ public class GroupActivity extends AppCompatActivity {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
+            iitem i=getItem(position);
             //更新数据源(核心)
             try{
-                holder.img.setImageURI(Uri.parse(getItem(position).getString(2)));
-                holder.name.setText(sql.get_user_name(getItem(position).getString(1)));
-                holder.time.setText(getItem(position).getString(3));
-                holder.data.setText(getItem(position).getString(4));
-                holder.zan.setText(getItem(position).getString(5));
-                holder.tiaozhuan.setText(getItem(position).getString(6));
-                holder.gadapter.setmList(sql.select_pic(getItem(position).getString(7)));
-                holder.ladapter.setmList(sql.select_pinglun(getItem(position).getString(8)));
-                holder.gadapter.notifyDataSetChanged();
-                holder.ladapter.notifyDataSetChanged();
+                holder.gadapter.setmList(sql.select_pic(i.l7));
+                holder.ladapter.setmList(sql.select_pinglun(i.l8));
+                holder.img.setImageURI(Uri.parse(sql.get_user_icon(i.l2)));
+                holder.name.setText(sql.get_user_name(i.l2));
+                holder.time.setText(i.l3);
+                holder.data.setText(i.l4);
+                holder.zan.setText(i.l5);
+                holder.tiaozhuan.setText(i.l6);
             }catch (Exception e){}
+            holder.gadapter.notifyDataSetChanged();
+            holder.ladapter.notifyDataSetChanged();
             return convertView;
         }
 
@@ -212,11 +255,6 @@ public class GroupActivity extends AppCompatActivity {
             GridViewAdapter gadapter;
 
             public ViewHolder(View view) {
-                img=(ImageView) findViewById(R.id.care_profile_photo);
-                name=(TextView) findViewById(R.id.care_nick_name) ;
-                time=(TextView) findViewById(R.id.care_share_time) ;
-                data=(TextView) findViewById(R.id.care_share_content) ;
-                zan=(TextView) findViewById(R.id.care_zan_num) ;
                 tiaozhuan=(TextView) findViewById(R.id.care_do_num) ;
                 listView = (ListView) view.findViewById(R.id.care_pinglun_list);
                 ladapter = new ListViewAdapter(mContext);
@@ -224,6 +262,11 @@ public class GroupActivity extends AppCompatActivity {
                 gridView = (GridView) view.findViewById(R.id.care_gridview_picture);
                 gadapter = new GridViewAdapter(mContext);
                 gridView.setAdapter(gadapter);
+                img=(ImageView) view.findViewById(R.id.care_profile_photo);
+                name=(TextView) view.findViewById(R.id.care_nick_name) ;
+                time=(TextView) view.findViewById(R.id.care_share_time) ;
+                data=(TextView) view.findViewById(R.id.care_share_content) ;
+                zan=(TextView) view.findViewById(R.id.care_zan_num) ;
                 view.setTag(this);
             }
         }
@@ -257,9 +300,9 @@ public class GroupActivity extends AppCompatActivity {
                 return 0;
             }
         }
-
         @Override
         public Cursor getItem(int position) {
+            mList.moveToFirst();
             mList.move(position);
             return mList;
         }
@@ -273,7 +316,7 @@ public class GroupActivity extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
             if (convertView == null) {
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_chat_in_homepage, parent, false);
+                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_comment, parent, false);
                 holder = new ViewHolder(convertView);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -329,6 +372,7 @@ public class GroupActivity extends AppCompatActivity {
 
         @Override
         public Cursor getItem(int position) {
+            mList.moveToFirst();
             mList.move(position);
             return mList;
         }
@@ -347,9 +391,8 @@ public class GroupActivity extends AppCompatActivity {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            try{
-                holder.iv.setImageURI(Uri.parse(getItem(position).getString(2)));
-            }catch (Exception e){}
+            getItem(position);
+            holder.iv.setImageURI(Uri.parse(mList.getString(2)));
             return convertView;
         }
 
@@ -363,6 +406,7 @@ public class GroupActivity extends AppCompatActivity {
             }
         }
     }
+
     public class ChatViewAdapter extends BaseAdapter {
 
         //数据源
@@ -403,6 +447,7 @@ public class GroupActivity extends AppCompatActivity {
 
         @Override
         public Cursor getItem(int position) {
+            mList.moveToFirst();
             mList.move(position);
             return mList;
         }
@@ -414,30 +459,25 @@ public class GroupActivity extends AppCompatActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
             if (convertView == null) {
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_chat, parent, false);
-                holder = new ViewHolder(convertView);
+                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_chat_in_homepage, parent, false);
+                //holder = new ViewHolder(convertView);
             } else {
-                holder = (ViewHolder) convertView.getTag();
+                //holder = (ViewHolder) convertView.getTag();
             }
-            //更新数据源(核心)
-                holder.name.setText(sql.get_user_name(sql.get_user_name(getItem(position).getString(2))));
-                holder.I_icon.setImageURI(Uri.parse(sql.get_user_icon(getItem(position).getString(2))));
-                holder.I_word.setText(sql.get_user_name(getItem(position).getString(3)));
+            TextView I_word;
+            TextView name;
+            CircleImageView I_icon;
+            name = (TextView)convertView.findViewById(R.id.name);
+            I_word =(TextView)convertView.findViewById(R.id.send_message);
+            I_icon =(CircleImageView) convertView.findViewById(R.id.avatar2);
+            int kp=10;
+            getItem(position);
+            name.setText(sql.get_user_name(mList.getString(2)));
+            I_icon.setImageURI(Uri.parse(sql.get_user_icon(mList.getString(2))));
+            I_word.setText(mList.getString(3));
             return convertView;
         }
 
-        class ViewHolder {
-            TextView I_word;
-            TextView name;
-            ImageView I_icon;
-            public ViewHolder(View view) {
-                I_word = (TextView)findViewById(R.id.name);
-                I_word =(TextView)findViewById(R.id.send_message);
-                I_icon =(ImageView) findViewById(R.id.avatar2);
-                view.setTag(this);
-            }
-        }
     }
 }

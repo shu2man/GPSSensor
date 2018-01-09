@@ -16,6 +16,6 @@
     <color name="color_dark">#011616</color>
     <color name="colorWhite">#FFFF</color>
     <color name="colorBlack">#000</color>
-    <color name="circle_start">#fa7832</color>
+    <color name="circle_start">#68e3cf</color>
     <color name="circle_end">#eb4438</color>
 </resources>

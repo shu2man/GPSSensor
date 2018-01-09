@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * Created by asus2 on 2017/12/29.
  */
@@ -130,10 +131,12 @@ public class home_page extends AppCompatActivity {
                 view_remen.setVisibility(View.INVISIBLE);
             }
         });
-        FatherViewAdapter guanzhu_adapter = new FatherViewAdapter(this,sql.select_guanzhu_all());
+        final FatherViewAdapter guanzhu_adapter = new FatherViewAdapter(this,sql.select_guanzhu_all());
         remenViewAdapter remen_adapter = new remenViewAdapter(this,sql.select_guanzhu_all());
         view_remen.setAdapter(remen_adapter);
+        remen_adapter.notifyDataSetChanged();
         list_guanzhu.setAdapter(guanzhu_adapter);
+        guanzhu_adapter.notifyDataSetChanged();
     }
 
     public class FatherViewAdapter extends BaseAdapter {
@@ -173,11 +176,30 @@ public class home_page extends AppCompatActivity {
             }
             return count;
         }*/
-
+        private class iitem{
+            String l1;
+            String l2;
+            String l3;
+            String l4;
+            String l5;
+            String l6;
+            String l7;
+            String l8;
+        }
         @Override
-        public Cursor getItem(int position) {
+        public iitem getItem(int position) {
+            mList.moveToFirst();
             mList.move(position);
-            return  mList;
+            iitem i=new iitem();
+            i.l1=mList.getString(2);
+            i.l2=mList.getString(1);
+            i.l3=mList.getString(3);
+            i.l4=mList.getString(4);
+            i.l5=mList.getString(5);
+            i.l6=mList.getString(6);
+            i.l7=mList.getString(7);
+            i.l8=mList.getString(7);
+            return i;
         }
 
         @Override
@@ -194,16 +216,17 @@ public class home_page extends AppCompatActivity {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
+            iitem i=getItem(position);
             //更新数据源(核心)
             try{
-                holder.img.setImageURI(Uri.parse(getItem(position).getString(2)));
-                holder.name.setText(sql.get_user_name(getItem(position).getString(1)));
-                holder.time.setText(getItem(position).getString(3));
-                holder.data.setText(getItem(position).getString(4));
-                holder.zan.setText(getItem(position).getString(5));
-                holder.tiaozhuan.setText(getItem(position).getString(6));
-                holder.gadapter.setmList(sql.select_pic(getItem(position).getString(7)));
-                holder.ladapter.setmList(sql.select_pinglun(getItem(position).getString(8)));
+                holder.img.setImageURI(Uri.parse(sql.get_user_icon(i.l2)));
+                holder.name.setText(sql.get_user_name(i.l2));
+                holder.time.setText(i.l3);
+                holder.data.setText(i.l4);
+                holder.zan.setText(i.l5);
+                holder.tiaozhuan.setText(i.l6);
+                holder.gadapter.setmList(sql.select_pic(i.l7));
+                holder.ladapter.setmList(sql.select_pinglun(i.l8));
             }catch (Exception e){}
             holder.gadapter.notifyDataSetChanged();
             holder.ladapter.notifyDataSetChanged();
@@ -223,12 +246,12 @@ public class home_page extends AppCompatActivity {
             GridViewAdapter gadapter;
 
             public ViewHolder(View view) {
-                img=(ImageView) findViewById(R.id.care_profile_photo);
-                name=(TextView) findViewById(R.id.care_nick_name) ;
-                time=(TextView) findViewById(R.id.care_share_time) ;
-                data=(TextView) findViewById(R.id.care_share_content) ;
-                zan=(TextView) findViewById(R.id.care_zan_num) ;
-                tiaozhuan=(TextView) findViewById(R.id.care_do_num) ;
+                img=(ImageView) view.findViewById(R.id.care_profile_photo);
+                name=(TextView) view.findViewById(R.id.care_nick_name) ;
+                time=(TextView) view.findViewById(R.id.care_share_time) ;
+                data=(TextView) view.findViewById(R.id.care_share_content) ;
+                zan=(TextView) view.findViewById(R.id.care_zan_num) ;
+                tiaozhuan=(TextView) view.findViewById(R.id.care_do_num) ;
                 listView = (ListView) view.findViewById(R.id.care_pinglun_list);
                 ladapter = new ListViewAdapter(mContext);
                 listView.setAdapter(ladapter);
@@ -268,9 +291,9 @@ public class home_page extends AppCompatActivity {
                 return 0;
             }
         }
-
         @Override
         public Cursor getItem(int position) {
+            mList.moveToFirst();
             mList.move(position);
             return mList;
         }
@@ -289,9 +312,10 @@ public class home_page extends AppCompatActivity {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
+            getItem(position+1);
             try{
-                holder.comment.setText(getItem(position).getString(3));
-                holder.name.setText(getItem(position).getString(2));
+                holder.comment.setText(mList.getString(3));
+                holder.name.setText(mList.getString(2));
             }catch (Exception e){}
             return convertView;
         }
@@ -339,6 +363,7 @@ public class home_page extends AppCompatActivity {
 
         @Override
         public Cursor getItem(int position) {
+            mList.moveToFirst();
             mList.move(position);
             return mList;
         }
@@ -357,9 +382,9 @@ public class home_page extends AppCompatActivity {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            try{
-                holder.iv.setImageURI(Uri.parse(getItem(position).getString(2)));
-            }catch (Exception e){}
+            holder = new ViewHolder(convertView);
+            getItem(position);
+            holder.iv.setImageURI(Uri.parse(mList.getString(2)));
             return convertView;
         }
 
@@ -379,18 +404,30 @@ public class home_page extends AppCompatActivity {
         Intent this_intent = getIntent();
         intent.putExtra("user",this_intent.getStringExtra("user"));
         startActivity(intent);
+        //this.finish();
     }
     public void goToGroup(View view){
         Intent intent=new Intent(this,GroupActivity.class);
         Intent this_intent = getIntent();
         intent.putExtra("user",this_intent.getStringExtra("user"));
         startActivity(intent);
+        //this.finish();
+    }
+    public void goToI(View view){
+        Intent intent=new Intent(this,I_Activity.class);
+        Intent this_intent = getIntent();
+        intent.putExtra("user",this_intent.getStringExtra("user"));
+        startActivity(intent);
+        //this.finish();
     }
 
     public class remenViewAdapter extends BaseAdapter {
+
         //数据源
         private Cursor mList;
+
         //列数
+
         private Context mContext;
 
         public remenViewAdapter(Context context,Cursor item) {
@@ -421,11 +458,23 @@ public class home_page extends AppCompatActivity {
             }
             return count;
         }*/
-
+        private class iitem{
+            String i1;
+            String i2;
+            String i3;
+            String i4;
+        }
         @Override
-        public Cursor getItem(int position) {
+        public iitem getItem(int position) {
+            mList.moveToFirst();
             mList.move(position);
-            return  mList;
+            iitem i=new iitem();
+            i.i1=mList.getString(7);
+            i.i2=mList.getString(2);
+            i.i3=mList.getString(4);
+            i.i4=mList.getString(5);
+
+            return i;
         }
 
         @Override
@@ -444,19 +493,24 @@ public class home_page extends AppCompatActivity {
             }
             //更新数据源(核心)
 
-            getItem(position);
+            iitem i=getItem(position);
             String ss;
             try {
-                ss=mList.getString(7);
+                ss=i.i1;
             }catch (Exception e){ss="0";}
             Cursor c=sql.select_pic(ss);
             c.moveToNext();
-            try{
-                holder.img.setImageURI(Uri.parse(c.getString(2)));
-                holder.icon.setImageURI(Uri.parse(mList.getString(2)));
-                holder.word.setText(mList.getString(4));
-                holder.zan.setText(mList.getString(5));
-            }catch (Exception e){}
+            int kp= 10;
+            while(kp>0)
+            {
+                try{
+                    holder.img.setImageURI(Uri.parse(c.getString(2)));
+                    holder.icon.setImageURI(Uri.parse(sql.get_user_icon(mList.getString(1))));
+                    holder.word.setText(i.i3);
+                    holder.zan.setText(i.i4);
+                    break;
+                }catch (Exception e){kp--;}
+            }
             return convertView;
         }
 
@@ -467,10 +521,10 @@ public class home_page extends AppCompatActivity {
             TextView  zan;
 
             public ViewHolder(View view) {
-                img=(ImageView) findViewById(R.id.hot_item_picture);
-                icon=(ImageView) findViewById(R.id.hot_item_profile_photo);
-                word=(TextView) findViewById(R.id.hot_item_content_shortcut) ;
-                zan=(TextView) findViewById(R.id.hot_zan_num) ;
+                img=(ImageView) view.findViewById(R.id.hot_item_picture);
+                icon=(ImageView) view.findViewById(R.id.hot_item_profile_photo);
+                word=(TextView) view.findViewById(R.id.hot_item_content_shortcut) ;
+                zan=(TextView) view.findViewById(R.id.hot_zan_num) ;
                 view.setTag(this);
             }
         }

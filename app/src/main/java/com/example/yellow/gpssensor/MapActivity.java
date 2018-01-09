@@ -702,19 +702,7 @@ public class MapActivity extends AppCompatActivity {
         }
         updateDrawInfo();
     }
-    public void goToShareBtn(View view){
-        goToShare("none");
-    }
-    public void goToShare(String type){
-        Intent intent=new Intent(MapActivity.this,ShareActivity.class);
-        intent.putExtra("type",type);
-        intent.putExtra("last","Map");
-        startActivity(intent);
-    }
-    public void goToGroup(View view){
-        Intent intent=new Intent(MapActivity.this,GroupActivity.class);
-        startActivity(intent);
-    }
+
     public void updateDrawInfo(){
         TextView drawDis=(TextView)findViewById(R.id.draw_distance_num);
         DecimalFormat f=new DecimalFormat("#.0");
@@ -817,10 +805,31 @@ public class MapActivity extends AppCompatActivity {
     }
 
 
-
+    public void goToShareBtn(View view){
+        goToShare("none");
+    }
+    public void goToShare(String type){
+        Intent intent=new Intent(MapActivity.this,ShareActivity.class);
+        intent.putExtra("type",type);
+        intent.putExtra("last","Map");
+        startActivity(intent);
+    }
+    public void goToGroup(View view){
+        Intent intent=new Intent(MapActivity.this,GroupActivity.class);
+        Intent this_intent = getIntent();
+        intent.putExtra("user",this_intent.getStringExtra("user"));
+        startActivity(intent);
+    }
     public void goToSetting(View view){
         Intent intent=new Intent(this,SettingActivity.class);
         startActivity(intent);
+    }
+    public void goToI(View view){
+        Intent intent=new Intent(this,I_Activity.class);
+        DataShare ds=((DataShare)getApplicationContext());
+        intent.putExtra("user",ds.getUsername());
+        startActivity(intent);
+        this.finish();
     }
 }
 
