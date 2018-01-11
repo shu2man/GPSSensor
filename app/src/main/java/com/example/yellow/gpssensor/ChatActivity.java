@@ -181,8 +181,8 @@ public class ChatActivity extends AppCompatActivity {
     public void addChatMsgToCloud(String sendId,String receiveId,String msg){
         ChatMsg chatMsg=new ChatMsg();
         chatMsg.setMsg(msg);
-        chatMsg.setReceive(receiveId);
-        chatMsg.setSend(sendId);
+        chatMsg.setR_id(receiveId);
+        chatMsg.setS_id(sendId);
         chatMsg.save(new SaveListener<String>() {
             @Override
             public void done(String s, BmobException e) {
@@ -214,31 +214,31 @@ public class ChatActivity extends AppCompatActivity {
 
 
     public class ChatMsg extends BmobObject {
-        private String send;//id
-        private String receive;//id
+        private String s_id;//id
+        private String r_id;//id
         private String msg;
 
         public String getMsg() {
             return msg;
         }
 
-        public String getReceive() {
-            return receive;
+        public String getR_id() {
+            return r_id;
         }
 
-        public String getSend() {
-            return send;
+        public String getS_id() {
+            return s_id;
         }
 
         public void setMsg(String msg) {
             this.msg = msg;
         }
 
-        public void setReceive(String receive) {
-            this.receive = receive;
+        public void setR_id(String receive) {
+            this.r_id = receive;
         }
-        public void setSend(String send) {
-            this.send = send;
+        public void setS_id(String send) {
+            this.s_id=send;
         }
     }
 }
