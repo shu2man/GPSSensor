@@ -12,6 +12,8 @@ import android.widget.ProgressBar;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
+import cn.bmob.v3.Bmob;
+
 public class welcome extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private boolean isFirstLaunch;
@@ -72,6 +74,8 @@ public class welcome extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
         welcome_bar_animation();
         sql=new MYSQL(this);
+
+        Bmob.initialize(this,"a8a331e7783012a0cb3948400e75956f");
 
         api= WXAPIFactory.createWXAPI(this,APP_ID,true);
         api.registerApp(APP_ID);//注册到微信

@@ -59,9 +59,9 @@ public class GroupActivity extends AppCompatActivity {
         View.OnClickListener dongtai_OnClick = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dongtai_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.listbgc));
-                withme_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.listbgc_half));
-                sixin_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.listbgc_half));
+                dongtai_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.listbgc_half));
+                withme_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.fade_text));
+                sixin_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.fade_text));
                 dongtai_view.setVisibility(View.VISIBLE);
                 withme_view.setVisibility(View.INVISIBLE);
                 sixin_view.setVisibility(View.INVISIBLE);
@@ -70,9 +70,9 @@ public class GroupActivity extends AppCompatActivity {
         View.OnClickListener withme_OnClick = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dongtai_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.listbgc_half));
-                withme_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.listbgc));
-                sixin_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.listbgc_half));
+                dongtai_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.fade_text));
+                withme_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.listbgc_half));
+                sixin_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.fade_text));
                 dongtai_view.setVisibility(View.INVISIBLE);
                 withme_view.setVisibility(View.VISIBLE);
                 sixin_view.setVisibility(View.INVISIBLE);
@@ -81,9 +81,9 @@ public class GroupActivity extends AppCompatActivity {
         View.OnClickListener sixin_OnClick = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dongtai_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.listbgc_half));
-                withme_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.listbgc_half));
-                sixin_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.listbgc));
+                dongtai_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.fade_text));
+                withme_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.fade_text));
+                sixin_text.setTextColor((ColorStateList) ((Resources) getBaseContext().getResources()).getColorStateList(R.color.listbgc_half));
                 dongtai_view.setVisibility(View.INVISIBLE);
                 withme_view.setVisibility(View.INVISIBLE);
                 sixin_view.setVisibility(View.VISIBLE);

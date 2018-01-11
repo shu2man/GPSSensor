@@ -227,7 +227,7 @@ public class home_page extends AppCompatActivity {
                 holder.tiaozhuan.setText(i.l6);
                 holder.gadapter.setmList(sql.select_pic(i.l7));
                 holder.ladapter.setmList(sql.select_pinglun(i.l8));
-            }catch (Exception e){}
+            }catch (Exception e){e.printStackTrace();}
             holder.gadapter.notifyDataSetChanged();
             holder.ladapter.notifyDataSetChanged();
             return convertView;

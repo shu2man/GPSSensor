@@ -24,6 +24,13 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.datatype.BmobQueryResult;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SQLQueryListener;
+import cn.bmob.v3.listener.SaveListener;
+
 /**
  * Created by asus2 on 2018/1/2.
  */
@@ -70,6 +77,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 sql.new_chat(intent.getStringExtra("user_id"),intent.getStringExtra("friend_id"),chatedit.getText().toString());
+                addChatMsgToCloud(intent.getStringExtra("user_id"),intent.getStringExtra("friend_id"),chatedit.getText().toString());
                 chatedit.setText("");
                 ChatViewAdapter listView_adapter = new ChatViewAdapter(ChatActivity.this,sql.get_speaks(intent.getStringExtra("user_id"),intent.getStringExtra("friend_id")));
                 listView.setAdapter(listView_adapter);
@@ -166,6 +174,71 @@ public class ChatActivity extends AppCompatActivity {
         }
         public void setOnItemClickListener(OnItemClickListener OnItemClickListener) {
             this.myonItemClickListener = OnItemClickListener;
+        }
+    }
+
+
+    public void addChatMsgToCloud(String sendId,String receiveId,String msg){
+        ChatMsg chatMsg=new ChatMsg();
+        chatMsg.setMsg(msg);
+        chatMsg.setReceive(receiveId);
+        chatMsg.setSend(sendId);
+        chatMsg.save(new SaveListener<String>() {
+            @Override
+            public void done(String s, BmobException e) {
+                if(e==null) Toast.makeText(ChatActivity.this,"成功发布到云端",Toast.LENGTH_SHORT).show();
+                else Toast.makeText(ChatActivity.this,"同步到云端失败",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public void queryFromCloud(){
+        BmobQuery<ChatMsg> query=new BmobQuery<ChatMsg>();
+        String bql="select * from ChatMsg where s_id = "+""+" and r_id = "+"";
+        query.setSQL(bql);
+        query.doSQLQuery(new SQLQueryListener<ChatMsg>() {
+            @Override
+            public void done(BmobQueryResult<ChatMsg> bmobQueryResult, BmobException e) {
+                if(e==null){
+                    List<ChatMsg> list=bmobQueryResult.getResults();
+                    if(list!=null&&list.size()>0){
+                        resultOut(list);
+                    }
+                }
+                else Toast.makeText(ChatActivity.this,"云端查询失败"+e.getErrorCode(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public List<ChatMsg> resultOut(List<ChatMsg> l){
+        return l;
+    }
+
+
+    public class ChatMsg extends BmobObject {
+        private String send;//id
+        private String receive;//id
+        private String msg;
+
+        public String getMsg() {
+            return msg;
+        }
+
+        public String getReceive() {
+            return receive;
+        }
+
+        public String getSend() {
+            return send;
+        }
+
+        public void setMsg(String msg) {
+            this.msg = msg;
+        }
+
+        public void setReceive(String receive) {
+            this.receive = receive;
+        }
+        public void setSend(String send) {
+            this.send = send;
         }
     }
 }

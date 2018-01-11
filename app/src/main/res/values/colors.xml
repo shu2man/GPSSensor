@@ -18,4 +18,6 @@
     <color name="colorBlack">#000</color>
     <color name="circle_start">#68e3cf</color>
     <color name="circle_end">#eb4438</color>
+    <color name="fade_text">#74939494</color>
+    <color name="color_chat">#f2f2f2</color>
 </resources>

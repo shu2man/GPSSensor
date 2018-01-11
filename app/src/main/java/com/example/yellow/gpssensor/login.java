@@ -55,7 +55,7 @@ public class login extends AppCompatActivity {
         unlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
+                Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
                         + getResources().getResourcePackageName(R.drawable.qq_zone) + "/"
                         + getResources().getResourceTypeName(R.drawable.qq_zone) + "/"
                         + getResources().getResourceEntryName(R.drawable.qq_zone));
@@ -63,7 +63,8 @@ public class login extends AppCompatActivity {
                 Cursor c=sql.select_user_by_name("游客");
                 c.moveToNext();
                 DataShare ds=((DataShare)getApplicationContext());
-                ds.setUserid(c.getString(0));*/
+                ds.setUserid(c.getString(0));
+                ds.setUsername("游客");
                 goToHome();
             }
         });
