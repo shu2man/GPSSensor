@@ -161,7 +161,7 @@ public class ChatActivity extends AppCompatActivity {
             this.myonItemClickListener = OnItemClickListener;
         }
     }
-    public void backToGroup(){
+    public void backToGroup(View view){
         Intent intent=new Intent(this,GroupActivity.class);
         startActivity(intent);
         this.finish();

@@ -106,7 +106,6 @@ public class GroupActivity extends AppCompatActivity {
         ListView withme_view = (ListView) findViewById(R.id.group_list_withme);
         ListView sixin_view = (ListView) findViewById(R.id.group_list_sixin);
         FatherViewAdapter dongtai_adapter = new FatherViewAdapter(this,null);
-        Intent intentin = getIntent();
         DataShare ds=((DataShare)getApplicationContext());
         final ChatViewAdapter sixin_adapter = new ChatViewAdapter(this,sql.get_chat_list(ds.getUserid()));//intentin.getStringExtra("user")
         dongtai_view.setAdapter(dongtai_adapter);
