@@ -12,10 +12,13 @@ import android.os.Message;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -25,6 +28,7 @@ import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.StackView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -38,6 +42,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.datatype.BmobQueryResult;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.SQLQueryListener;
+import cn.bmob.v3.listener.SaveListener;
 
 
 /**
@@ -563,6 +575,47 @@ public class home_page extends AppCompatActivity {
             Fresco.initialize(context);
             return new SimpleDraweeView(context);
         }
+    }
+
+    public void initSearch(){
+        final EditText et_search=(EditText)findViewById(R.id.search_view);
+        et_search.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId== EditorInfo.IME_ACTION_SEARCH){
+                    String str=et_search.getText().toString();
+
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+    public void queryFromCloud(String s){
+        BmobQuery<login.user> cond1=new BmobQuery<>();
+        BmobQuery<login.user> cond2=new BmobQuery<>();
+        cond1.addWhereEqualTo("objectId",s);
+        cond2.addWhereEqualTo("name",s);
+        List<BmobQuery<login.user>> queries=new ArrayList<BmobQuery<login.user>>();
+        queries.add(cond1);
+        queries.add(cond2);
+        BmobQuery<login.user> query=new BmobQuery<>();
+        query.or(queries);//或查找
+        query.findObjects(new FindListener<login.user>() {
+            @Override
+            public void done(List<login.user> list, BmobException e) {
+                if(e==null){;
+                    if(list!=null/*&&list.size()>0*/){
+                        setSearchList(list);
+                    }
+                }
+                else Toast.makeText(home_page.this,"云端查询失败"+e.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public void setSearchList(List<login.user> list){
+        ListView lv=(ListView)findViewById(R.id.search_result_list);
+        Toast.makeText(this,"匹配数："+list.size(),Toast.LENGTH_SHORT).show();
     }
 
 }

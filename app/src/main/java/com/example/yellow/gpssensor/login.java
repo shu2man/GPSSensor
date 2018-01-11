@@ -30,6 +30,16 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import org.w3c.dom.Text;
 
+import java.util.List;
+
+import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.datatype.BmobQueryResult;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.SQLQueryListener;
+import cn.bmob.v3.listener.SaveListener;
+
 public class login extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private boolean isFirstLaunch;
@@ -135,6 +145,11 @@ public class login extends AppCompatActivity {
                 editor.putString("Username",et_name.getText().toString());
                 editor.apply();
 
+                //保存到云端成功自动将ID加到DataShare中
+                addUserToCloud(et_name.getText().toString(),et_confirm.getText().toString());
+                DataShare ds=((DataShare)getApplicationContext());
+                ds.setUsername(et_name.getText().toString());
+
                 Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
                         + getResources().getResourcePackageName(R.drawable.qq_zone) + "/"
                         + getResources().getResourceTypeName(R.drawable.qq_zone) + "/"
@@ -147,9 +162,10 @@ public class login extends AppCompatActivity {
                 intent.putExtra("user",c.getString(0));
 
                 startActivity(intent);
-                DataShare ds=((DataShare)getApplicationContext());
-                ds.setUsername(sharedPreferences.getString("Username","游客"));
-                ds.setUserid(c.getString(1));
+
+                //ds.setUsername(sharedPreferences.getString("Username","游客"));
+                //ds.setUserid(c.getString(1));
+
                 Toast.makeText(this,sharedPreferences.getString("Username","游客"),Toast.LENGTH_SHORT).show();
                 this.finish();
             }
@@ -205,6 +221,82 @@ public class login extends AppCompatActivity {
         final SendAuth.Req SAreq=new SendAuth.Req();
         SAreq.scope="snsapi_userinfo";
         SAreq.state="wechat_state_login";*/
+
+    }
+    public void addUserToCloud(String name,String psd){
+        user u=new user();
+        u.setName(name);
+        u.setPsd(psd);
+        u.save(new SaveListener<String>() {
+            @Override
+            public void done(String s, BmobException e) {
+                if(e==null) {
+                    Toast.makeText(login.this,"成功发布到云端",Toast.LENGTH_SHORT).show();
+                    setIDToDataShare(s);
+                }
+                else Toast.makeText(login.this,"同步到云端失败",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public void setIDToDataShare(String str){
+        DataShare ds=((DataShare)getApplicationContext());
+        ds.setUserid(str);
+    }
+    public void queryFromCloud(String s_id,String r_id){
+        BmobQuery<user> cond1=new BmobQuery<>();
+        cond1.addWhereEqualTo("s_id",s_id);
+        cond1.addWhereEqualTo("r_id",r_id);
+        cond1.setLimit(50);//返回条目数量，不设置默认10
+        cond1.findObjects(new FindListener<user>() {
+            @Override
+            public void done(List<user> list, BmobException e) {
+                if(e==null){;
+                    if(list!=null/*&&list.size()>0*/){
+
+                    }
+                }
+                else Toast.makeText(login.this,"云端查询失败"+e.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public class user extends BmobObject{
+        private String sign;
+        private String psd;
+        private String profile;
+        private String name;
+        private String objectedId;
+
+        public void setObjectedId(String objectedId) {
+            this.objectedId = objectedId;
+        }
+        public void setName(String name) {
+            this.name = name;
+        }
+        public void setProfile(String profile) {
+            this.profile = profile;
+        }
+        public void setPsd(String psd) {
+            this.psd = psd;
+        }
+        public void setSign(String sign) {
+            this.sign = sign;
+        }
+
+        public String getObjectedId() {
+            return objectedId;
+        }
+        public String getName() {
+            return name;
+        }
+        public String getProfile() {
+            return profile;
+        }
+        public String getPsd() {
+            return psd;
+        }
+        public String getSign() {
+            return sign;
+        }
 
     }
 
