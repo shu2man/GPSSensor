@@ -28,6 +28,7 @@ import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobQueryResult;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SQLQueryListener;
 import cn.bmob.v3.listener.SaveListener;
 
@@ -36,7 +37,9 @@ import cn.bmob.v3.listener.SaveListener;
  */
 
 public class ChatActivity extends AppCompatActivity {
+    private ChatViewAdapter listView_adapter;
     private MYSQL sql;
+    private List<ChatMsg> mychatMsg = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,23 +57,12 @@ public class ChatActivity extends AppCompatActivity {
     }
     public void init_chat()
     {
+        listView_adapter = new ChatViewAdapter(ChatActivity.this,mychatMsg);
         final Intent intent =getIntent();
         final RecyclerView listView=(RecyclerView)findViewById(R.id.list_view);
-        Cursor c= sql.get_speaks(intent.getStringExtra("user_id"),intent.getStringExtra("friend_id"));
-        ChatViewAdapter listView_adapter = new ChatViewAdapter(this,sql.get_speaks(intent.getStringExtra("user_id"),intent.getStringExtra("friend_id")));
-        listView_adapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onClick(int position) {
-                Toast.makeText(ChatActivity.this,"dddddd",Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onLongClick(int position) {
-                Toast.makeText(ChatActivity.this,"dddddd",Toast.LENGTH_SHORT).show();
-            }
-        });
         listView.setLayoutManager(new LinearLayoutManager(ChatActivity.this));
         listView.setAdapter(listView_adapter);
+        queryFromCloud(intent.getStringExtra("user_id"),intent.getStringExtra("friend_id"));
         final EditText chatedit = (EditText)findViewById(R.id.edit_message);
         final Button send =(Button)findViewById(R.id.send_btn);
         send.setOnClickListener(new View.OnClickListener() {
@@ -79,8 +71,6 @@ public class ChatActivity extends AppCompatActivity {
                 sql.new_chat(intent.getStringExtra("user_id"),intent.getStringExtra("friend_id"),chatedit.getText().toString());
                 addChatMsgToCloud(intent.getStringExtra("user_id"),intent.getStringExtra("friend_id"),chatedit.getText().toString());
                 chatedit.setText("");
-                ChatViewAdapter listView_adapter = new ChatViewAdapter(ChatActivity.this,sql.get_speaks(intent.getStringExtra("user_id"),intent.getStringExtra("friend_id")));
-                listView.setAdapter(listView_adapter);
             }
         });
     }
@@ -92,10 +82,8 @@ public class ChatActivity extends AppCompatActivity {
         private CardView Other_c;
         private ImageView I_icon;
         private ImageView Other_icon;
-        private Cursor mList;
-        public List_ViewHolder(View view,Cursor List) {
+        public List_ViewHolder(View view) {
             super(view);
-            mList=List;
             I_word = (TextView)view.findViewById(R.id.send_message);
             Other_word =(TextView)view.findViewById(R.id.get_message);
             I_c = (CardView)view.findViewById(R.id.my_word);
@@ -103,32 +91,26 @@ public class ChatActivity extends AppCompatActivity {
             I_icon =(ImageView) view.findViewById(R.id.avatar_my);
             Other_icon =(ImageView) view.findViewById(R.id.avatar_other);
         }
-        public Cursor getItem(int position) {
-            mList.moveToFirst();
-            mList.move(position);
-            return mList;
-        }
-        public void bindData(int position) {
-            getItem(position);
-            if(mList.getString(2).equals("I"))
+        public void bindData(ChatMsg position) {
+            if(getIntent().getStringExtra("user_id").equals(position.getS_id()))
             {
                 this.Other_icon.setVisibility(View.INVISIBLE);
                 this.Other_c.setVisibility(View.INVISIBLE);
                 this.I_icon.setVisibility(View.VISIBLE);
                 this.I_c.setVisibility(View.VISIBLE);
-                this.I_word.setText(mList.getString(4));
-                Uri ui=Uri.parse(sql.get_user_icon(mList.getString(1)));
+                this.I_word.setText(position.getMsg());
+                Uri ui=Uri.parse(sql.get_user_icon(position.getS_id()));
                 this.I_icon.setImageURI(ui);
             }
             else
             {
-                Uri ui=Uri.parse(sql.get_user_icon(mList.getString(3)));
+                Uri ui=Uri.parse(sql.get_user_icon(position.getR_id()));
                 this.Other_icon.setVisibility(View.VISIBLE);
                 this.Other_c.setVisibility(View.VISIBLE);
                 this.I_icon.setVisibility(View.INVISIBLE);
                 this.I_c.setVisibility(View.INVISIBLE);
                 this.Other_icon.setImageURI(ui);
-                this.Other_word.setText(mList.getString(4));
+                this.Other_word.setText(position.getMsg());
             }
         }
     }
@@ -137,21 +119,24 @@ public class ChatActivity extends AppCompatActivity {
         void onLongClick(int position);
     }
     public class ChatViewAdapter extends RecyclerView.Adapter<List_ViewHolder>  {
-        private Cursor mList;
+        private List<ChatMsg> mList;
         private Context mContext;
         private OnItemClickListener myonItemClickListener = null;
-        public ChatViewAdapter(Context context, Cursor list) {
+        public ChatViewAdapter(Context context, List<ChatMsg> list) {
             this.mContext = context;
             this.mList = list;
         }
         @Override
         public List_ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat, parent, false);
-            return new List_ViewHolder(itemView,mList);
+            return new List_ViewHolder(itemView);
+        }
+        public ChatMsg getItem(int position) {
+            return mList.get(position);
         }
         @Override
         public void onBindViewHolder(final List_ViewHolder holder, int position) {
-            holder.bindData(position);
+            holder.bindData(getItem(position));
             if (myonItemClickListener != null) {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -170,11 +155,16 @@ public class ChatActivity extends AppCompatActivity {
         }
         @Override
         public int getItemCount() {
-            return mList.getCount();
+            return mList.size();
         }
         public void setOnItemClickListener(OnItemClickListener OnItemClickListener) {
             this.myonItemClickListener = OnItemClickListener;
         }
+    }
+    public void backToGroup(){
+        Intent intent=new Intent(this,GroupActivity.class);
+        startActivity(intent);
+        this.finish();
     }
 
 
@@ -188,28 +178,56 @@ public class ChatActivity extends AppCompatActivity {
             public void done(String s, BmobException e) {
                 if(e==null) Toast.makeText(ChatActivity.this,"成功发布到云端",Toast.LENGTH_SHORT).show();
                 else Toast.makeText(ChatActivity.this,"同步到云端失败",Toast.LENGTH_SHORT).show();
+
+                queryFromCloud(getIntent().getStringExtra("user_id"),getIntent().getStringExtra("friend_id"));
             }
         });
     }
-    public void queryFromCloud(){
-        BmobQuery<ChatMsg> query=new BmobQuery<ChatMsg>();
-        String bql="select * from ChatMsg where s_id = "+""+" and r_id = "+"";
-        query.setSQL(bql);
-        query.doSQLQuery(new SQLQueryListener<ChatMsg>() {
+    public void queryFromCloud(String s_id,String r_id){
+        //BmobQuery<ChatMsg> query=new BmobQuery<ChatMsg>();
+        //String bql="select * from ChatMsg where s_id = 1";//+s_id+" and r_id = "+r_id;// +" or  s_id = "+r_id+" and r_id = "+s_id;
+        //Toast.makeText(ChatActivity.this,"123",Toast.LENGTH_SHORT).show();
+        //query.setSQL(bql);
+        BmobQuery<ChatMsg> cond1=new BmobQuery<>();
+        cond1.addWhereEqualTo("s_id",s_id);
+        cond1.addWhereEqualTo("r_id",r_id);
+        cond1.setLimit(50);//返回条目数量，不设置默认10
+        cond1.findObjects(new FindListener<ChatMsg>() {
+            @Override
+            public void done(List<ChatMsg> list, BmobException e) {
+                if(e==null){
+                    //List<ChatMsg> list=bmobQueryResult.getResults();
+                    //Toast.makeText(ChatActivity.this,"expt is null",Toast.LENGTH_SHORT).show();
+                    if(list!=null/*&&list.size()>0*/){
+                        //resultOut(list);
+                        mychatMsg=list;
+                        listView_adapter.notifyDataSetChanged();
+                        Toast.makeText(ChatActivity.this,list.get(0).getMsg(),Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else Toast.makeText(ChatActivity.this,"云端查询失败"+e.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
+/*        query.doSQLQuery(new SQLQueryListener<ChatMsg>() {
             @Override
             public void done(BmobQueryResult<ChatMsg> bmobQueryResult, BmobException e) {
                 if(e==null){
                     List<ChatMsg> list=bmobQueryResult.getResults();
-                    if(list!=null&&list.size()>0){
-                        resultOut(list);
+                    Toast.makeText(ChatActivity.this,mychatMsg.get(0).getMsg(),Toast.LENGTH_SHORT).show();
+                    if(list!=null*//*&&list.size()>0*//*){
+                        //resultOut(list);
+                        mychatMsg=list;
                     }
                 }
-                else Toast.makeText(ChatActivity.this,"云端查询失败"+e.getErrorCode(),Toast.LENGTH_SHORT).show();
+                else Toast.makeText(ChatActivity.this,"云端查询失败"+e.getMessage(),Toast.LENGTH_SHORT).show();
+                listView_adapter.notifyDataSetChanged();
             }
-        });
+        });*/
     }
-    public List<ChatMsg> resultOut(List<ChatMsg> l){
-        return l;
+    public void resultOut(List<ChatMsg> l){
+        mychatMsg= l;
+        Toast.makeText(ChatActivity.this,mychatMsg.get(0).getMsg(),Toast.LENGTH_SHORT).show();
     }
 
 
