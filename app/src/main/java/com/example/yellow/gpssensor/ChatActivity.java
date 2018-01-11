@@ -21,16 +21,20 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobRealTimeData;
 import cn.bmob.v3.datatype.BmobQueryResult;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SQLQueryListener;
 import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.ValueEventListener;
 
 /**
  * Created by asus2 on 2018/1/2.
@@ -40,12 +44,17 @@ public class ChatActivity extends AppCompatActivity {
     private ChatViewAdapter listView_adapter;
     private MYSQL sql;
     private List<ChatMsg> mychatMsg = new ArrayList<>();
+
+    private BmobRealTimeData rtd;
+    private Thread msgThread;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         sql=new MYSQL(this);
         init_chat();
+        initCloudChatDB();
     }
     class iitem{
         String I_word;
@@ -54,6 +63,38 @@ public class ChatActivity extends AppCompatActivity {
         String Other_c;
         String I_icon;
         String Other_icon;
+    }
+
+
+
+    public void initCloudChatDB(){
+        msgThread=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                BmobRealTimeData rtd=new BmobRealTimeData();
+                rtd.start(new ValueEventListener() {
+                    @Override
+                    public void onConnectCompleted(Exception e) {
+                        //Toast.makeText(ChatActivity.this,"连接数据库成功",Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onDataChange(JSONObject jsonObject) {
+                        try {
+                            ChatMsg chatMsg=new ChatMsg();
+                            chatMsg.setMsg(jsonObject.getString("msg"));
+                            chatMsg.setS_id(jsonObject.getString("s_id"));
+                            chatMsg.setR_id(jsonObject.getString("r_id"));
+                            listView_adapter.mList.add(chatMsg);
+                            listView_adapter.notifyDataSetChanged();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                if(rtd.isConnected()) rtd.subTableUpdate("ChatMsg");
+            }
+        });
+        msgThread.start();
     }
     public void init_chat()
     {
@@ -119,7 +160,7 @@ public class ChatActivity extends AppCompatActivity {
         void onLongClick(int position);
     }
     public class ChatViewAdapter extends RecyclerView.Adapter<List_ViewHolder>  {
-        private List<ChatMsg> mList;
+        public List<ChatMsg> mList;
         private Context mContext;
         private OnItemClickListener myonItemClickListener = null;
         public ChatViewAdapter(Context context, List<ChatMsg> list) {
@@ -164,7 +205,7 @@ public class ChatActivity extends AppCompatActivity {
     public void backToGroup(View view){
         Intent intent=new Intent(this,GroupActivity.class);
         startActivity(intent);
-        this.finish();
+        //this.finish();
     }
 
 
@@ -200,7 +241,7 @@ public class ChatActivity extends AppCompatActivity {
                     //Toast.makeText(ChatActivity.this,"expt is null",Toast.LENGTH_SHORT).show();
                     if(list!=null/*&&list.size()>0*/){
                         //resultOut(list);
-                        mychatMsg=list;
+                        listView_adapter.mList=list;
                         listView_adapter.notifyDataSetChanged();
                         Toast.makeText(ChatActivity.this,list.get(0).getMsg(),Toast.LENGTH_SHORT).show();
                     }

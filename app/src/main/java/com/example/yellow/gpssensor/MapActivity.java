@@ -792,7 +792,7 @@ public class MapActivity extends AppCompatActivity {
                         out.close();
                         //Toast.makeText(MapActivity.this,"截图成功",Toast.LENGTH_SHORT).show();
                     }
-                    ds.setPath(path);
+                    ds.setPath(path+"/"+format.format(date)+".png");
 
                 }catch (Exception e){
                     Toast.makeText(MapActivity.this,"SnapShot Fail\n"+path+"\n"+e.getMessage(),Toast.LENGTH_LONG).show();
