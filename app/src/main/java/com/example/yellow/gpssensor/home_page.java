@@ -1,6 +1,7 @@
 package com.example.yellow.gpssensor;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -11,12 +12,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Parcel;
 import android.os.RemoteException;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -42,6 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.Inflater;
 
 import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobQuery;
@@ -58,6 +62,10 @@ import cn.bmob.v3.listener.SaveListener;
 
 public class home_page extends AppCompatActivity {
     private MYSQL sql;
+    private List<Map<String,Object>> searchResultList;
+    private SimpleAdapter adapter;
+    private ListView lv=(ListView)findViewById(R.id.search_result_list);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -585,9 +593,41 @@ public class home_page extends AppCompatActivity {
                 if(actionId== EditorInfo.IME_ACTION_SEARCH){
                     String str=et_search.getText().toString();
 
+                    queryFromCloud(str);//通过ID或用户名搜索
+
                     return true;
                 }
                 return false;
+            }
+        });
+
+        searchResultList=new ArrayList<>();
+
+        Map<String,Object> item=new HashMap<>();
+        item.put("name","暂无搜索结果");
+        item.put("id","暂无id");
+        searchResultList.add(item);
+        String[] from={"name","id"};
+        int[] to={R.id.search_item_name,R.id.search_item_id};
+        adapter=new SimpleAdapter(this,searchResultList,R.layout.item_search,from,to);
+        lv.setAdapter(adapter);
+
+        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                final TextView tv=(TextView)view.findViewById(R.id.search_item_id);
+                AlertDialog.Builder ab=new AlertDialog.Builder(home_page.this);
+                ab.setTitle("确定添加为好友？");
+                ab.setNegativeButton("取消",null);
+                ab.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DataShare ds=((DataShare)getApplicationContext());
+                        addFriendToCloud(ds.getUserid(),tv.getText().toString());
+                        lv.setVisibility(View.GONE);
+                    }
+                });
+                return true;
             }
         });
     }
@@ -606,6 +646,7 @@ public class home_page extends AppCompatActivity {
             public void done(List<login.user> list, BmobException e) {
                 if(e==null){;
                     if(list!=null/*&&list.size()>0*/){
+                        lv.setVisibility(View.VISIBLE);
                         setSearchList(list);
                     }
                 }
@@ -614,8 +655,55 @@ public class home_page extends AppCompatActivity {
         });
     }
     public void setSearchList(List<login.user> list){
-        ListView lv=(ListView)findViewById(R.id.search_result_list);
-        Toast.makeText(this,"匹配数："+list.size(),Toast.LENGTH_SHORT).show();
+        //ListView lv=(ListView)findViewById(R.id.search_result_list);
+        searchResultList.clear();
+        for(int i=0;i<list.size();i++){
+            Map<String,Object> item=new HashMap<>();
+            item.put("name",list.get(i).getName());
+            item.put("id",list.get(i).getObjectedId());
+            searchResultList.add(item);
+        }
+        adapter.notifyDataSetChanged();
+        //Toast.makeText(this,"匹配数："+list.size(),Toast.LENGTH_SHORT).show();
+    }
+    public void addFriendToCloud(String userid,String fid){
+        friends f=new friends();
+        f.setId1(userid);
+        f.setId2(fid);
+        f.save(new SaveListener<String>() {
+            @Override
+            public void done(String s, BmobException e) {
+                if(e==null) Toast.makeText(home_page.this,"添加成功",Toast.LENGTH_SHORT).show();
+                else Toast.makeText(home_page.this,"添加失败",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    public class friends extends BmobObject {
+        private String id1;
+        private String id2;
+        private String lastword;
+
+        public void setId1(String id1) {
+            this.id1 = id1;
+        }
+        public void setId2(String id2) {
+            this.id2 = id2;
+        }
+        public void setLastword(String lastword) {
+            this.lastword = lastword;
+        }
+
+        public String getId1() {
+            return id1;
+        }
+        public String getId2() {
+            return id2;
+        }
+        public String getLastword() {
+            return lastword;
+        }
     }
 
 }

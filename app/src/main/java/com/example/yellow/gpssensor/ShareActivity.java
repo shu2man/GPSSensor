@@ -40,6 +40,10 @@ import cn.bmob.v3.listener.SaveListener;
  */
 
 //AppSecret: 71d51701664b52196a58c0d3a3ce37c9
+//APP_ID=wxd8e1494ccbebbd1f
+
+//app_id=wx2e4ae8285a016b51
+//app_secret=98ffa0dfb13e15b8a401abaa6fa585f9
 
 public class ShareActivity extends Activity {
     private String type;
@@ -52,7 +56,7 @@ public class ShareActivity extends Activity {
     private SimpleAdapter pic;
 
     //登录微信的应用ID
-    private static final String APP_ID="wxd8e1494ccbebbd1f";
+    private static final String APP_ID="wx2e4ae8285a016b51";
     //和微信通信的openapi接口
     private IWXAPI api;
 

@@ -14,13 +14,17 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import cn.bmob.v3.Bmob;
 
+//APP_ID="wxd8e1494ccbebbd1f"
+//
 public class welcome extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private boolean isFirstLaunch;
     private MYSQL sql;
 
+    private String bmobID="a8a331e7783012a0cb3948400e75956f";
+
     //登录微信的应用ID
-    private static final String APP_ID="wxd8e1494ccbebbd1f";
+    private static final String APP_ID="wx2e4ae8285a016b51";
     //和微信通信的openapi接口
     private IWXAPI api;
 
