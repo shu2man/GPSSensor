@@ -64,7 +64,7 @@ public class home_page extends AppCompatActivity {
     private MYSQL sql;
     private List<Map<String,Object>> searchResultList;
     private SimpleAdapter adapter;
-    private ListView lv=(ListView)findViewById(R.id.search_result_list);
+    private ListView lv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +74,7 @@ public class home_page extends AppCompatActivity {
         init_homepage();
         initBanner();
 
+        initSearch();
     }
     public void initBanner(){
         List<URL> images=new ArrayList<>();
@@ -600,7 +601,7 @@ public class home_page extends AppCompatActivity {
                 return false;
             }
         });
-
+        lv=(ListView)findViewById(R.id.search_result_list);
         searchResultList=new ArrayList<>();
 
         Map<String,Object> item=new HashMap<>();
@@ -627,6 +628,7 @@ public class home_page extends AppCompatActivity {
                         lv.setVisibility(View.GONE);
                     }
                 });
+                ab.show();
                 return true;
             }
         });
@@ -641,6 +643,7 @@ public class home_page extends AppCompatActivity {
         queries.add(cond2);
         BmobQuery<login.user> query=new BmobQuery<>();
         query.or(queries);//或查找
+        Toast.makeText(home_page.this,"正在搜索...",Toast.LENGTH_SHORT).show();
         query.findObjects(new FindListener<login.user>() {
             @Override
             public void done(List<login.user> list, BmobException e) {
