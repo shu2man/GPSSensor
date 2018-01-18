@@ -29,7 +29,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler{
 
     @Override
     public void onReq(BaseReq req){
-
+        Toast.makeText(this,"分享请求中",Toast.LENGTH_SHORT).show();
     }
     @Override
     public void onResp(BaseResp resp){

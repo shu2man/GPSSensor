@@ -777,14 +777,15 @@ public class MapActivity extends AppCompatActivity {
             public void onSnapshotReady(Bitmap bitmap) {
                 DataShare ds=((DataShare) getApplicationContext());
                 ds.setSnapShot(bitmap);
-                String path=Environment.getExternalStorageDirectory().getPath();
                 //File f=new File(Environment.getExternalStorageDirectory(),"/JiQu/traceShot");
+                String path=Environment.getExternalStorageDirectory().getPath();
                 path=path+"/JiQu/traceShot";
                 File file=new File(path);
                 Toast.makeText(MapActivity.this,"--生成截图--",Toast.LENGTH_SHORT).show();
                 try{
                     boolean b;
-                    if(!file.exists()) b=file.mkdirs();//不要用mkdir，被坑了一晚上
+                    //不要用mkdir，被坑了一晚上
+                    if(!file.exists()) b=file.mkdir();
                     File filepng=new File(format.format(date)+".png");
                     FileOutputStream out=new FileOutputStream(file+"/"+filepng);//FileOutputStream
                     if(bitmap.compress(Bitmap.CompressFormat.PNG,50,out)){
