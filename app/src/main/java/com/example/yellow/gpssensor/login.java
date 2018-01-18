@@ -231,8 +231,9 @@ public class login extends AppCompatActivity {
             @Override
             public void done(String s, BmobException e) {
                 if(e==null) {
-                    Toast.makeText(login.this,"成功发布到云端",Toast.LENGTH_SHORT).show();
-                    setIDToDataShare(s);
+                    Toast.makeText(login.this,"成功同步到云端\nid为："+s,Toast.LENGTH_SHORT).show();
+                    DataShare ds=((DataShare)getApplicationContext());
+                    ds.setUserid(s);
                 }
                 else Toast.makeText(login.this,"同步到云端失败",Toast.LENGTH_SHORT).show();
             }
@@ -241,6 +242,7 @@ public class login extends AppCompatActivity {
     public void setIDToDataShare(String str){
         DataShare ds=((DataShare)getApplicationContext());
         ds.setUserid(str);
+        Toast.makeText(this,str,Toast.LENGTH_SHORT).show();
     }
     public void queryFromCloud(String s_id,String r_id){
         BmobQuery<user> cond1=new BmobQuery<>();
@@ -264,11 +266,11 @@ public class login extends AppCompatActivity {
         private String psd;
         private String profile;
         private String name;
-        private String objectedId;
+        //private String objectId;
 
-        public void setObjectedId(String objectedId) {
-            this.objectedId = objectedId;
-        }
+/*        public void setObjectId(String objectId) {
+            this.objectId = objectId;
+        }*/
         public void setName(String name) {
             this.name = name;
         }
@@ -282,9 +284,9 @@ public class login extends AppCompatActivity {
             this.sign = sign;
         }
 
-        public String getObjectedId() {
-            return objectedId;
-        }
+        /*public String getObjectId() {
+            return objectId;
+        }*/
         public String getName() {
             return name;
         }

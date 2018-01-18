@@ -95,7 +95,7 @@ public class welcome extends AppCompatActivity {
             ds.setUsername(sharedPreferences.getString("Username","游客"));
             Cursor c=sql.select_user_by_name(ds.getUsername());
             c.moveToNext();
-            ds.setUserid(c.getString(0));
+            //ds.setUserid(c.getString(0));
         }
         else{
             //Guide The User To Register In

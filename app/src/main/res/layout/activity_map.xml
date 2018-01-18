@@ -275,7 +275,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="设置/搜索 轨迹信息"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:textColorHint="@color/hint_color"
             android:gravity="center|start"
             android:layout_marginStart="5dp"

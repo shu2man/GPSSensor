@@ -120,6 +120,7 @@ public class SettingActivity extends Activity {
         editor.clear();
         editor.apply();
         Intent intent=new Intent(this,login.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         this.finish();
     }

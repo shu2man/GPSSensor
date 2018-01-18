@@ -663,7 +663,7 @@ public class home_page extends AppCompatActivity {
         for(int i=0;i<list.size();i++){
             Map<String,Object> item=new HashMap<>();
             item.put("name",list.get(i).getName());
-            item.put("id",list.get(i).getObjectedId());
+            item.put("id",list.get(i).getObjectId());
             searchResultList.add(item);
         }
         adapter.notifyDataSetChanged();
@@ -710,4 +710,5 @@ public class home_page extends AppCompatActivity {
     }
 
 }
+
 

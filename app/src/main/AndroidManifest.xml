@@ -40,7 +40,9 @@
         <activity android:name=".login"
             android:launchMode="singleInstance"/>
         <activity android:name=".home_page"
-            android:launchMode="singleInstance"/>
+            android:launchMode="singleInstance"
+            android:windowSoftInputMode="stateHidden"/>
+
         <activity android:name=".MapActivity"
             android:launchMode="singleInstance"/>
         <activity android:name=".GroupActivity"
