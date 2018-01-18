@@ -231,9 +231,8 @@ public class login extends AppCompatActivity {
             @Override
             public void done(String s, BmobException e) {
                 if(e==null) {
+                    setIDToDataShare(s);
                     Toast.makeText(login.this,"成功同步到云端\nid为："+s,Toast.LENGTH_SHORT).show();
-                    DataShare ds=((DataShare)getApplicationContext());
-                    ds.setUserid(s);
                 }
                 else Toast.makeText(login.this,"同步到云端失败",Toast.LENGTH_SHORT).show();
             }
