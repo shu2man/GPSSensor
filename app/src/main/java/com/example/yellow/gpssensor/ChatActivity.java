@@ -65,8 +65,6 @@ public class ChatActivity extends AppCompatActivity {
         String Other_icon;
     }
 
-
-
     public void initCloudChatDB(){
         msgThread=new Thread(new Runnable() {
             @Override

@@ -30,6 +30,7 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobObject;
@@ -45,6 +46,7 @@ public class login extends AppCompatActivity {
     private boolean isFirstLaunch;
     private MYSQL sql;
     private int SignMode=1;//默认1-登录模式，2-注册模式
+    private  String psdFromCloud;
 
     //登录微信的应用ID
     private static final String APP_ID="wxd8e1494ccbebbd1f";
@@ -175,22 +177,39 @@ public class login extends AppCompatActivity {
         }
         else if(SignMode==1){
             Cursor c=sql.select_user_by_name(et_name.getText().toString());
-            if(c.moveToNext()){
-                if(c.getString(2).equals(et_new.getText().toString())){
-                    SharedPreferences.Editor editor=sharedPreferences.edit();
-                    editor.putBoolean("isFirstLaunch",false);
-                    editor.putString("Password",et_new.getText().toString());
-                    editor.putString("Username",et_name.getText().toString());
-                    editor.apply();
-                    goToHome();
+            getUserFromCloud(et_name.getText().toString());
+            final String na=et_name.getText().toString();
+            final String ps=et_new.getText().toString();
+            new Thread() {
+                @Override
+                public void run() {
+                    super.run();
+                    try{
+                        Thread.sleep(3000);//休眠3秒
+                        //while(psdFromCloud==null) continue;//wait for search result
+                        if(!psdFromCloud.equals("登录失败")){//c.moveToNext()
+                            if(psdFromCloud.equals(ps)){//c.getString(2)
+                                SharedPreferences.Editor editor=sharedPreferences.edit();
+                                editor.putBoolean("isFirstLaunch",false);
+                                editor.putString("Password",psdFromCloud);//et_new.getText().toString()
+                                editor.putString("Username",na);
+                                editor.apply();
+                                goToHome();//跳转到主页
+                            }
+                            else{
+                                Toast.makeText(login.this,"密码错误",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        else{
+                            //psdFromCloud="登录失败" or psdFromCloud="用户名不存在"
+                            Toast.makeText(login.this,psdFromCloud,Toast.LENGTH_SHORT).show();
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
-                else{
-                    Toast.makeText(this,"密码错误",Toast.LENGTH_SHORT).show();
-                }
-            }
-            else{
-                Toast.makeText(this,"用户名不存在",Toast.LENGTH_SHORT).show();
-            }
+            }.start();
+
         }
 
     }
@@ -257,6 +276,23 @@ public class login extends AppCompatActivity {
                     }
                 }
                 else Toast.makeText(login.this,"云端查询失败"+e.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public void getUserFromCloud(String name){
+        BmobQuery<login.user> cond2=new BmobQuery<>();
+        cond2.addWhereEqualTo("name",name);
+        cond2.findObjects(new FindListener<login.user>() {
+            @Override
+            public void done(List<login.user> list, BmobException e) {
+                if(e==null){;
+                    if(list!=null&&list.size()>0){
+                        psdFromCloud=list.get(0).getPsd();
+                    }
+                }
+                else if(list.size()==0) psdFromCloud="用户名不存在";
+                else psdFromCloud="登录失败";
+                //Toast.makeText(login.this,"云端查询失败"+e.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
     }
