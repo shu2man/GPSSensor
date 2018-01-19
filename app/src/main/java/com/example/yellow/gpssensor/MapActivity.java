@@ -290,8 +290,7 @@ public class MapActivity extends AppCompatActivity {
                 if (errorCode==61||errorCode==161||errorCode==66||errorCode==65) {
                     //61-GPS，161-网络，66-离线，65-缓存，改变地图状态
                     mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
-                    //mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
-                    //构建MarkerOption，用于在地图上添加Marker
+                    //构建MarkerOption，用于在地图上显示手机位置
                     OverlayOptions option=new MarkerOptions().position(ll).icon(mMarker);
                     mBaiduMap.addOverlay(option);
                 }
@@ -563,9 +562,6 @@ public class MapActivity extends AppCompatActivity {
     public double disLatLng(List<LatLng> plist){
         double sum=0;
         for(int i=1;i<plist.size();i++){
-            /*double lat=trackLatLngs.get(i).latitude-trackLatLngs.get(i-1).latitude;
-            double lng=trackLatLngs.get(i).longitude-trackLatLngs.get(i-1).longitude;
-            sum+=Math.sqrt(lat*lat+lng*lng);*/
             sum+=DistanceUtil.getDistance(plist.get(i),plist.get(i-1));
         }
         return sum;

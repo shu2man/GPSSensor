@@ -16,7 +16,7 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 public class WXEntryActivity extends Activity implements IWXAPIEventHandler{
     //登录微信的应用ID
-    private static final String APP_ID="wxd8e1494ccbebbd1f";
+    private static final String APP_ID="wx2e4ae8285a016b51";
     //和微信通信的openapi接口
     private IWXAPI api;
 

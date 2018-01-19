@@ -106,36 +106,28 @@ public class ShareActivity extends Activity {
                 break;
             case R.id.share_others_pengyouquang:
                 String contentText=content.getText().toString();
-                api= WXAPIFactory.createWXAPI(this,APP_ID,true);
+                api= WXAPIFactory.createWXAPI(this,APP_ID);//true
                 //api.registerApp(APP_ID);//注册到微信
                 if(!api.isWXAppInstalled()){
                     Toast.makeText(this,"未检测到微信客户端",Toast.LENGTH_SHORT).show();
                     return;
                 }
-
+                else Toast.makeText(this,"准备分享",Toast.LENGTH_SHORT).show();
                 WXTextObject textObject=new WXTextObject();
                 textObject.text=contentText;
-
-                //要发送的图片
-                Bitmap bmp= BitmapFactory.decodeResource(getResources(),R.drawable.jiqu_hd);
-                //初始化WXImageObject对象
-                WXImageObject imageObject=new WXImageObject(bmp);
-                //初始化WXMediaMessage对象
-                WXMediaMessage msg=new WXMediaMessage();
+                Bitmap bmp= BitmapFactory.decodeResource(getResources(),R.drawable.jiqu_hd);//要发送的图片
+                WXImageObject imageObject=new WXImageObject(bmp);//初始化WXImageObject对象
+                WXMediaMessage msg=new WXMediaMessage();//初始化WXMediaMessage对象
                 msg.mediaObject=imageObject;
                 msg.description=contentText;
                 //msg.setThumbImage(bmp);
-
-                //构造Req,微信处理完返回应用
-                SendMessageToWX.Req req=new SendMessageToWX.Req();
+                SendMessageToWX.Req req=new SendMessageToWX.Req();//构造Req,微信处理完返回应用
                 //设置发送场景，WXSceneSession聊天界面，WXSceneTimeline朋友圈，WXSceneFavorite收藏
                 req.scene=SendMessageToWX.Req.WXSceneTimeline;
                 //transaction用于唯一标识一个字段
                 req.transaction=String.valueOf(System.currentTimeMillis());
                 req.message=msg;
-
-                //调用api发送消息到微信
-                api.sendReq(req);
+                api.sendReq(req);//调用api发送消息到微信
 
                 break;
         }
