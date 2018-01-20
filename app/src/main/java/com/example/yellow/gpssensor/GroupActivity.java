@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -45,7 +46,8 @@ public class GroupActivity extends AppCompatActivity {
         TextView name = (TextView)findViewById(R.id.group_title_name);
         DataShare ds = ((DataShare)getApplicationContext());
         String id = ds.getUserid();
-        Cursor c = sql.select_user(id);
+        Toast.makeText(this,id,Toast.LENGTH_LONG).show();
+        Cursor c = sql.select_user_by_net_id(id);
         c.moveToNext();
         //icon.setImageURI(Uri.parse(c.getString(3)));
         name.setText(c.getString(1));
@@ -120,7 +122,7 @@ public class GroupActivity extends AppCompatActivity {
                 c.moveToFirst();
                 c.move(position);
                 Intent in=new Intent(GroupActivity.this,ChatActivity.class);
-                in.putExtra("user_id",c.getString(1));
+                in.putExtra("user_id",c.getString(5));
                 in.putExtra("friend_id",c.getString(2));
                 startActivity(in);
             }

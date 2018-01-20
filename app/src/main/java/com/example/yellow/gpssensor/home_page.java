@@ -593,9 +593,7 @@ public class home_page extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if(actionId== EditorInfo.IME_ACTION_SEARCH){
                     String str=et_search.getText().toString();
-
                     queryFromCloud(str);//通过ID或用户名搜索
-
                     return true;
                 }
                 return false;

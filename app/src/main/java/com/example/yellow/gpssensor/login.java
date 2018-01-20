@@ -47,6 +47,8 @@ public class login extends AppCompatActivity {
     private MYSQL sql;
     private int SignMode=1;//默认1-登录模式，2-注册模式
     private  String psdFromCloud;
+    private String idFromCloud;
+    private Uri uri;
 
     //登录微信的应用ID
     private static final String APP_ID="wxd8e1494ccbebbd1f";
@@ -87,9 +89,7 @@ public class login extends AppCompatActivity {
         if(!isFirstLaunch){
             DataShare ds=((DataShare)getApplicationContext());
             ds.setUsername(sharedPreferences.getString("Username","游客"));
-            Cursor c=sql.select_user_by_name(ds.getUsername());
-            c.moveToNext();
-            ds.setUserid(c.getString(0));
+            ds.setUserid(sharedPreferences.getString("Userid","游客"));
             goToHome();
         }
         else{
@@ -146,23 +146,17 @@ public class login extends AppCompatActivity {
                 editor.putString("Password",et_confirm.getText().toString());
                 editor.putString("Username",et_name.getText().toString());
                 editor.apply();
-
+                uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
+                        + getResources().getResourcePackageName(R.drawable.qq_zone) + "/"
+                        + getResources().getResourceTypeName(R.drawable.qq_zone) + "/"
+                        + getResources().getResourceEntryName(R.drawable.qq_zone));
+                sql.new_user(et_name.getText().toString(),et_confirm.getText().toString(),uri.toString());
                 //保存到云端成功自动将ID加到DataShare中
                 addUserToCloud(et_name.getText().toString(),et_confirm.getText().toString());
                 DataShare ds=((DataShare)getApplicationContext());
                 ds.setUsername(et_name.getText().toString());
 
-                Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
-                        + getResources().getResourcePackageName(R.drawable.qq_zone) + "/"
-                        + getResources().getResourceTypeName(R.drawable.qq_zone) + "/"
-                        + getResources().getResourceEntryName(R.drawable.qq_zone));
-                sql.new_user(et_name.getText().toString(),et_confirm.getText().toString(),uri.toString());
-
                 Intent intent=new Intent(this,label.class);
-                Cursor c=sql.select_user_by_name(et_name.getText().toString());
-                c.moveToNext();
-                intent.putExtra("user",c.getString(0));
-
                 startActivity(intent);
 
                 //ds.setUsername(sharedPreferences.getString("Username","游客"));
@@ -176,7 +170,6 @@ public class login extends AppCompatActivity {
             }
         }
         else if(SignMode==1){
-            Cursor c=sql.select_user_by_name(et_name.getText().toString());
             getUserFromCloud(et_name.getText().toString());
             final String na=et_name.getText().toString();
             final String ps=et_new.getText().toString();
@@ -191,9 +184,12 @@ public class login extends AppCompatActivity {
                             if(psdFromCloud.equals(ps)){//c.getString(2)
                                 SharedPreferences.Editor editor=sharedPreferences.edit();
                                 editor.putBoolean("isFirstLaunch",false);
-                                editor.putString("Password",psdFromCloud);//et_new.getText().toString()
+                                editor.putString("Password",ps);//et_new.getText().toString()
                                 editor.putString("Username",na);
                                 editor.apply();
+                                DataShare ds=((DataShare)getApplicationContext());
+                                ds.setUserid(idFromCloud);
+                                ds.setUsername(na);
                                 goToHome();//跳转到主页
                             }
                             else{
@@ -246,6 +242,8 @@ public class login extends AppCompatActivity {
         user u=new user();
         u.setName(name);
         u.setPsd(psd);
+        DataShare ds=((DataShare)getApplicationContext());
+        ds.setUsername(name);
         u.save(new SaveListener<String>() {
             @Override
             public void done(String s, BmobException e) {
@@ -258,8 +256,14 @@ public class login extends AppCompatActivity {
         });
     }
     public void setIDToDataShare(String str){
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putString("Usersid",str);
+        editor.apply();
         DataShare ds=((DataShare)getApplicationContext());
         ds.setUserid(str);
+        Cursor c=sql.select_user_by_name(ds.getUsername());
+        c.moveToNext();
+        sql.set_netid(c.getString(0),str);
         Toast.makeText(this,str,Toast.LENGTH_SHORT).show();
     }
     public void queryFromCloud(String s_id,String r_id){
@@ -288,6 +292,12 @@ public class login extends AppCompatActivity {
                 if(e==null){;
                     if(list!=null&&list.size()>0){
                         psdFromCloud=list.get(0).getPsd();
+                        idFromCloud=list.get(0).getObjectId();
+                        uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
+                                + getResources().getResourcePackageName(R.drawable.qq_zone) + "/"
+                                + getResources().getResourceTypeName(R.drawable.qq_zone) + "/"
+                                + getResources().getResourceEntryName(R.drawable.qq_zone));
+                        sql.user_from_net(list.get(0).getName(),psdFromCloud,uri.toString());
                     }
                 }
                 else if(list.size()==0) psdFromCloud="用户名不存在";
