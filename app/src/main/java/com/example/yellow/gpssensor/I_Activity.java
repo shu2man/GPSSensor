@@ -46,7 +46,7 @@ public class I_Activity extends AppCompatActivity {
         ID.setText("ID："+id);
         Cursor c = sql.select_user(id);
         c.moveToNext();
-        icon.setImageURI(Uri.parse(c.getString(3)));
+        if(c.isNull(0)) icon.setImageURI(Uri.parse(c.getString(3)));
         name.setText(c.getString(1));
         word.setText(c.getString(4));
         final TextView chuangjian_text = (TextView)findViewById(R.id.me_establish);

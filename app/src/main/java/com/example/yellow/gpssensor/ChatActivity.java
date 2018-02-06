@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,7 +25,10 @@ import android.widget.Toast;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
 
 import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobQuery;
@@ -65,10 +69,13 @@ public class ChatActivity extends AppCompatActivity {
         String Other_icon;
     }
 
+
+
     public void initCloudChatDB(){
-        msgThread=new Thread(new Runnable() {
-            @Override
-            public void run() {
+
+        //msgThread=new Thread(new Runnable() {
+            //@Override
+            //public void run() {
                 BmobRealTimeData rtd=new BmobRealTimeData();
                 rtd.start(new ValueEventListener() {
                     @Override
@@ -90,9 +97,9 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 });
                 if(rtd.isConnected()) rtd.subTableUpdate("ChatMsg");
-            }
-        });
-        msgThread.start();
+            //}
+        //});
+        //msgThread.start();
     }
     public void init_chat()
     {

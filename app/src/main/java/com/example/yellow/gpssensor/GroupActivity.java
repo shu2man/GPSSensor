@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ public class GroupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group);
+
         sql=new MYSQL(this);
         init_group();
         init_adapter();
@@ -475,7 +477,10 @@ public class GroupActivity extends AppCompatActivity {
             int kp=10;
             getItem(position);
             name.setText(sql.get_user_name(mList.getString(2)));
-            I_icon.setImageURI(Uri.parse(sql.get_user_icon(mList.getString(2))));
+            try
+            {
+                I_icon.setImageURI(Uri.parse(sql.get_user_icon(mList.getString(2))));
+            }catch(Exception e){}
             I_word.setText(mList.getString(3));
             return convertView;
         }

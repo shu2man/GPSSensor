@@ -186,10 +186,14 @@ public class login extends AppCompatActivity {
                                 editor.putBoolean("isFirstLaunch",false);
                                 editor.putString("Password",ps);//et_new.getText().toString()
                                 editor.putString("Username",na);
+                                editor.putString("Userid",idFromCloud);
                                 editor.apply();
                                 DataShare ds=((DataShare)getApplicationContext());
                                 ds.setUserid(idFromCloud);
                                 ds.setUsername(na);
+                                Cursor c=sql.select_user_by_name(ds.getUsername());
+                                c.moveToNext();
+                                sql.set_netid(c.getString(0),idFromCloud);
                                 goToHome();//跳转到主页
                             }
                             else{
