@@ -19,6 +19,7 @@ public class ChatMainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_main);
 
+        initChatMainData();
     }
     public void initChatMainData(){
         DataShare ds=((DataShare)getApplicationContext());
@@ -34,6 +35,8 @@ public class ChatMainActivity extends AppCompatActivity {
             }
         });
 
+        recyclerView.setAdapter(adapter);
+
     }
     public void goToChat(int position){
         DataShare ds=((DataShare)getApplicationContext());
@@ -41,6 +44,10 @@ public class ChatMainActivity extends AppCompatActivity {
         in.putExtra("user_id",ds.getUserid());
         in.putExtra("friend_id",ds.getFriUser().get(position));
         startActivity(in);
+    }
+    public void goToMap(View view){
+        Intent intent=new Intent(ChatMainActivity.this,MapActivity.class);
+        startActivity(intent);
     }
 
 }

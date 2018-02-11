@@ -97,7 +97,7 @@ public class DataShare extends Application {
 
     }
     public void findFriendsFromCloud(){
-        BmobTable bt=new BmobTable();
+        //查找朋友关系
         BmobQuery<BmobTable.friends> cond1=new BmobQuery<BmobTable.friends>();
         BmobQuery<BmobTable.friends> cond2=new BmobQuery<>();
         cond1.addWhereEqualTo("id1",userid);
@@ -110,9 +110,10 @@ public class DataShare extends Application {
         mainQuery.findObjects(new FindListener<BmobTable.friends>() {
             @Override
             public void done(List<BmobTable.friends> list, BmobException e) {
-                if(e==null&&list!=null){
-                    Friends=list;
-                }
+            if(e==null&&list!=null){
+                Friends=list;
+                Toast.makeText(DataShare.this,list.size()+"-1",Toast.LENGTH_SHORT).show();
+            }
             }
         });
 
@@ -128,9 +129,11 @@ public class DataShare extends Application {
         mainQuery2.findObjects(new FindListener<BmobTable.user>() {
             @Override
             public void done(List<BmobTable.user> list, BmobException e) {
-                if(e==null&&list!=null){
-                    FriUser=list;
-                }
+            if(e==null&&list!=null){
+                FriUser=list;
+                Toast.makeText(DataShare.this,list.size()+"-2",Toast.LENGTH_SHORT).show();
+            }
+            //Toast.makeText(DataShare.this,list.size()+"-2",Toast.LENGTH_SHORT).show();//donote incase of null list
             }
         });
 

@@ -829,7 +829,8 @@ public class MapActivity extends AppCompatActivity {
         this.finish();
     }
     public void goToChatMain(View view){
-
+        Intent intent=new Intent(MapActivity.this,ChatMainActivity.class);
+        startActivity(intent);
     }
 }
 

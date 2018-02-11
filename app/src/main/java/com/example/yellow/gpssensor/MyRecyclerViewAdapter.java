@@ -66,9 +66,9 @@ class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.M
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         holder.nametv.setText(Name.get(position));
-        holder.timetv.setText(Time.get(position));
+        //holder.timetv.setText(Time.get(position));
         holder.wordtv.setText(Word.get(position));
-        holder.cimgv.setImageBitmap(Cimg.get(position));
+        //holder.cimgv.setImageBitmap(Cimg.get(position));
 /*        holder.title.setText(Name.get(position));
         holder.iconletter.setText(Name.get(position).substring(0,1));*/
         //点击事件
