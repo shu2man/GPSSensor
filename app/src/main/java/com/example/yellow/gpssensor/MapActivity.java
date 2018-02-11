@@ -828,6 +828,9 @@ public class MapActivity extends AppCompatActivity {
         startActivity(intent);
         this.finish();
     }
+    public void goToChatMain(View view){
+
+    }
 }
 
 

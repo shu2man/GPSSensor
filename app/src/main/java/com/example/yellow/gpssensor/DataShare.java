@@ -2,6 +2,7 @@ package com.example.yellow.gpssensor;
 
 import android.app.Application;
 import android.graphics.Bitmap;
+import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -23,14 +24,15 @@ public class DataShare extends Application {
     private Bitmap snapShot;
     private String path;
 
-    private List<home_page.friends> Friends;
+    private List<BmobTable.friends> Friends;
     private List<String> Name;
     private List<String> Word;
     private List<String> Time;
     private List<Bitmap> Cimg;
+    private List<BmobTable.user> FriUser;
 
     public DataShare(){
-
+        //initFriends();
     }
     public void setUsername(String name){
         username=name;
@@ -69,28 +71,82 @@ public class DataShare extends Application {
     public List<Bitmap> getFriendsCimgList(){
         return Cimg;
     }
+    public List<BmobTable.user> getFriUser(){
+        return FriUser;
+    }
+
 
     public void initFriends(){
+        if(Friends!=null) Friends.clear();
+        if(Name!=null) Name.clear();
+        if(Cimg!=null) Cimg.clear();
+        if(Word!=null) Word.clear();
+        if(Time!=null) Time.clear();
+        if(FriUser!=null) FriUser.clear();
+
         Friends=new ArrayList<>();
+        Name=new ArrayList<>();
+        Cimg=new ArrayList<>();
+        Word=new ArrayList<>();
+        Time=new ArrayList<>();
+        FriUser=new ArrayList<>();
+
+        findFriendsFromCloud();
     }
     public void initFriendsData(){
 
     }
-    public List<home_page.friends> findFriendsFromCloud(){
-
-        BmobQuery<home_page.friends> cond1=new BmobQuery<>();
-        BmobQuery<home_page.friends> cond2=new BmobQuery<>();
+    public void findFriendsFromCloud(){
+        BmobTable bt=new BmobTable();
+        BmobQuery<BmobTable.friends> cond1=new BmobQuery<BmobTable.friends>();
+        BmobQuery<BmobTable.friends> cond2=new BmobQuery<>();
         cond1.addWhereEqualTo("id1",userid);
         cond2.addWhereEqualTo("id2",userid);
-        List<BmobQuery<home_page.friends>> orQuery=new ArrayList<BmobQuery<home_page.friends>>();
+        List<BmobQuery<BmobTable.friends>> orQuery=new ArrayList<BmobQuery<BmobTable.friends>>();
         orQuery.add(cond1);
-        orQuery.add(cond2);
-        BmobQuery<home_page.friends> mainQuery=new BmobQuery<>();
+        //orQuery.add(cond2);
+        BmobQuery<BmobTable.friends> mainQuery=new BmobQuery<>();
         mainQuery.or(orQuery);
-        mainQuery.findObjects(new FindListener<home_page.friends>() {
+        mainQuery.findObjects(new FindListener<BmobTable.friends>() {
             @Override
-            public void done(List<home_page.friends> list, BmobException e) {
+            public void done(List<BmobTable.friends> list, BmobException e) {
                 if(e==null&&list!=null){
+                    Friends=list;
+                }
+            }
+        });
+
+        //通过好友关系，查找好友信息
+        List<BmobQuery<BmobTable.user>> orList=new ArrayList<>();
+        for(int i=0;i<Friends.size();i++) {
+            BmobQuery<BmobTable.user> eq=new BmobQuery<>();
+            eq.addWhereEqualTo("objectId",Friends.get(i).getId2());
+            orList.add(eq);
+        }
+        BmobQuery<BmobTable.user> mainQuery2=new BmobQuery<>();
+        mainQuery2.or(orList);
+        mainQuery2.findObjects(new FindListener<BmobTable.user>() {
+            @Override
+            public void done(List<BmobTable.user> list, BmobException e) {
+                if(e==null&&list!=null){
+                    FriUser=list;
+                }
+            }
+        });
+
+        //接下来通过好友关系查找最近聊天记录
+        for(int i=0;i<Friends.size();i++){
+            Word.add(i+" 雷猴旁友！");
+        }
+
+    }
+    public void findUserByObjectId(String id){
+        BmobQuery<BmobTable.user> cond1=new BmobQuery<>();
+        cond1.addWhereEqualTo("objectId",id);
+        cond1.findObjects(new FindListener<BmobTable.user>() {
+            @Override
+            public void done(List<BmobTable.user> list, BmobException e) {
+                if(e==null&&list!=null){;
 
                 }
             }

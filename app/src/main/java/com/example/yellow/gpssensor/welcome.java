@@ -79,7 +79,7 @@ public class welcome extends AppCompatActivity {
         welcome_bar_animation();
         sql=new MYSQL(this);
 
-        Bmob.initialize(this,"a8a331e7783012a0cb3948400e75956f");
+        Bmob.initialize(this,bmobID);//初始化Bmob后端云
 
         api= WXAPIFactory.createWXAPI(this,APP_ID,true);
         api.registerApp(APP_ID);//注册到微信

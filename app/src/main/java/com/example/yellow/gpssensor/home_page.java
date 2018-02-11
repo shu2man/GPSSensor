@@ -677,6 +677,7 @@ public class home_page extends AppCompatActivity {
         friends f=new friends();
         f.setId1(userid);
         f.setId2(fid);
+        f.setLastword("我们是朋友啦，来聊天吧！");
         f.save(new SaveListener<String>() {
             @Override
             public void done(String s, BmobException e) {
