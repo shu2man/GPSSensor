@@ -1,5 +1,6 @@
 package com.example.yellow.gpssensor;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -7,10 +8,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ProgressBar;
 
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.tencent.stat.MtaSDkException;
+import com.tencent.stat.StatService;
 
 import cn.bmob.v3.Bmob;
 
@@ -22,6 +26,10 @@ public class welcome extends AppCompatActivity {
     private MYSQL sql;
 
     private String bmobID="a8a331e7783012a0cb3948400e75956f";
+
+    private String MTAappID="3103433370";
+    private String MTAappKey="ALL79L6B8QVH";
+    private String MTAstatVersion=com.tencent.stat.common.StatConstants.VERSION;
 
     //登录微信的应用ID
     private static final String APP_ID="wx2e4ae8285a016b51";
@@ -85,6 +93,14 @@ public class welcome extends AppCompatActivity {
         api.registerApp(APP_ID);//注册到微信
 
         checkShouldRegister();
+
+        //初始化MTA
+        try{
+            StatService.startStatService(this,MTAappKey,MTAstatVersion);
+            Log.d("MTA","MTA初始化成功");
+        }catch (MtaSDkException e){
+            Log.d("MTA","MTA初始化失败");
+        }
     }
 
     public void checkShouldRegister(){

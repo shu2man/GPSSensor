@@ -35,6 +35,7 @@ import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.tencent.stat.StatService;
 import com.youth.banner.Banner;
 import com.youth.banner.Transformer;
 import com.youth.banner.loader.ImageLoader;
@@ -76,6 +77,19 @@ public class home_page extends AppCompatActivity {
 
         initSearch();
     }
+    @Override
+    protected void onResume(){
+        super.onResume();
+        //MTA跟踪
+        //StatService.trackCustomKVEvent(this,"HomePage",null);
+        StatService.trackBeginPage(this,"HomePage");
+    }
+    @Override
+    protected void onPause(){
+        super.onPause();
+        StatService.trackEndPage(this,"HomePage");
+    }
+
     public void initBanner(){
         List<URL> images=new ArrayList<>();
         try{

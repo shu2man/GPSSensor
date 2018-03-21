@@ -73,9 +73,9 @@ public class ChatActivity extends AppCompatActivity {
 
     public void initCloudChatDB(){
 
-        //msgThread=new Thread(new Runnable() {
-            //@Override
-            //public void run() {
+        msgThread=new Thread(new Runnable() {
+            @Override
+            public void run() {
                 BmobRealTimeData rtd=new BmobRealTimeData();
                 rtd.start(new ValueEventListener() {
                     @Override
@@ -97,9 +97,9 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 });
                 if(rtd.isConnected()) rtd.subTableUpdate("ChatMsg");
-            //}
-        //});
-        //msgThread.start();
+            }
+        });
+        msgThread.start();
     }
     public void init_chat()
     {
@@ -145,8 +145,8 @@ public class ChatActivity extends AppCompatActivity {
                 this.I_icon.setVisibility(View.VISIBLE);
                 this.I_c.setVisibility(View.VISIBLE);
                 this.I_word.setText(position.getMsg());
-                Uri ui=Uri.parse(sql.get_user_icon(position.getS_id()));
-                this.I_icon.setImageURI(ui);
+                /*Uri ui=Uri.parse(sql.get_user_icon(position.getS_id()));
+                this.I_icon.setImageURI(ui);*/
             }
             else
             {

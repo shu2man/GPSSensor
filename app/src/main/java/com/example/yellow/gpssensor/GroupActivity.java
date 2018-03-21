@@ -110,7 +110,8 @@ public class GroupActivity extends AppCompatActivity {
         ListView withme_view = (ListView) findViewById(R.id.group_list_withme);
         ListView sixin_view = (ListView) findViewById(R.id.group_list_sixin);
         FatherViewAdapter dongtai_adapter = new FatherViewAdapter(this,null);
-        DataShare ds=((DataShare)getApplicationContext());
+        final DataShare ds=((DataShare)getApplicationContext());
+        ds.initFriends();
         final ChatViewAdapter sixin_adapter = new ChatViewAdapter(this,sql.get_chat_list(ds.getUserid()));//intentin.getStringExtra("user")
         dongtai_view.setAdapter(dongtai_adapter);
         dongtai_adapter.mList=sql.select_guanzhu_all();
@@ -124,7 +125,7 @@ public class GroupActivity extends AppCompatActivity {
                 c.moveToFirst();
                 c.move(position);
                 Intent in=new Intent(GroupActivity.this,ChatActivity.class);
-                in.putExtra("user_id",c.getString(5));
+                in.putExtra("user_id",ds.getUserid());//in.putExtra("user_id",c.getString(5));
                 in.putExtra("friend_id",c.getString(2));
                 startActivity(in);
             }

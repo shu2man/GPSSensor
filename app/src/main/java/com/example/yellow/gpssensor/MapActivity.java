@@ -78,6 +78,7 @@ import com.baidu.trace.model.PushMessage;
 import com.baidu.trace.model.SortType;
 import com.baidu.trace.model.TraceLocation;
 import com.baidu.trace.model.TransportMode;
+import com.tencent.stat.StatService;
 
 import static java.lang.Math.sqrt;
 
@@ -151,6 +152,8 @@ public class MapActivity extends AppCompatActivity {
 
         locateToCurrent((ImageButton)findViewById(R.id.locating_button));
     }
+
+
     public void verifyPermission(Activity activity){
         try{
             int permission= ActivityCompat.checkSelfPermission(activity,PERMISSION_LOCATION[3]);
@@ -369,12 +372,18 @@ public class MapActivity extends AppCompatActivity {
         super.onResume();
         //在activity执行onResume时执行mMapView. onResume ()，实现地图生命周期管理
         mMapView.onResume();
+
+        //MTA跟踪
+        //StatService.trackCustomKVEvent(this,"Map",null);
+        StatService.trackBeginPage(this,"Map");
     }
     @Override
     protected void onPause() {
         super.onPause();
         //在activity执行onPause时执行mMapView. onPause ()，实现地图生命周期管理
         mMapView.onPause();
+
+        StatService.trackEndPage(this,"Map");
     }
 
     public void heatModeMap(View view){

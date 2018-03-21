@@ -47,8 +47,8 @@ public class I_Activity extends AppCompatActivity {
         Cursor c = sql.select_user(id);
         c.moveToNext();
         //if(c.isNull(0)) icon.setImageURI(Uri.parse(c.getString(3)));
-        name.setText(c.getString(1));
-        word.setText(c.getString(4));
+        name.setText(ds.getUsername());//name.setText(c.getString(1));
+        //word.setText(c.getString(4));
         final TextView chuangjian_text = (TextView)findViewById(R.id.me_establish);
         final TextView tiaozhan_text = (TextView)findViewById(R.id.me_challenge);
         final ListView chuangjian = (ListView)findViewById(R.id.chuangjian);

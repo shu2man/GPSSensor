@@ -10,7 +10,48 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+        }
+        manifestPlaceholders = [
+            MTA_APPKEY:"ALL79L6B8QVH",
+            MTA_CHANNEL:"yingyongbao"
+        ]
     }
+
+/*    ndk {
+        abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+    }
+    manifestPlaceholders = [
+            MTA_APPKEY:"ALL79L6B8QVH",
+            MTA_CHANNEL:"Yingyongbao"
+    ]*/
+
+/*    productFlavors {
+        x86{
+            ndk{
+                abiFilter "x86"
+            }
+        }
+        mips {
+            ndk {
+                abiFilter "mips"
+            }
+        }
+        armv7 {
+            ndk {
+                abiFilter "armeabi-v7a"
+            }
+        }
+        arm {
+            ndk {
+                abiFilter "armeabi"
+            }
+        }
+        fat
+    }*/
+
     buildTypes {
         release {
             minifyEnabled false
@@ -51,6 +92,14 @@ dependencies {
     compile 'cn.bmob.android:bmob-sdk:3.5.5'
     //如果你想应用能够兼容Android6.0，请添加此依赖(org.apache.http.legacy.jar)
     compile 'cn.bmob.android:http-legacy:1.0'
+
+    //mta 3.3 稳定版
+    //compile 'com.tencent.mta:mta:3.3.1-release'
+    //MTA 3.4.0 beta 版本
+    compile 'com.qq.mta:mta:3.4.0.1-beta'
+    compile 'com.tencent.mid:mid:3.73-release'
+    //mid jar包 必须添加
+    compile 'com.tencent.mid:mid:3.73-release'
 
 }
 

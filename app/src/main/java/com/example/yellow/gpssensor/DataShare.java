@@ -112,7 +112,7 @@ public class DataShare extends Application {
             public void done(List<BmobTable.friends> list, BmobException e) {
             if(e==null&&list!=null){
                 Friends=list;
-                Toast.makeText(DataShare.this,list.size()+"-1",Toast.LENGTH_SHORT).show();
+                Toast.makeText(DataShare.this,list.size()+" 条好友记录",Toast.LENGTH_SHORT).show();
             }
             }
         });
@@ -131,8 +131,9 @@ public class DataShare extends Application {
             public void done(List<BmobTable.user> list, BmobException e) {
             if(e==null&&list!=null){
                 FriUser=list;
-                Toast.makeText(DataShare.this,list.size()+"-2",Toast.LENGTH_SHORT).show();
+                Toast.makeText(DataShare.this,list.size()+" 个朋友",Toast.LENGTH_SHORT).show();
             }
+            else if(list==null) Toast.makeText(DataShare.this,"list为空",Toast.LENGTH_SHORT).show();
             //Toast.makeText(DataShare.this,list.size()+"-2",Toast.LENGTH_SHORT).show();//donote incase of null list
             }
         });
