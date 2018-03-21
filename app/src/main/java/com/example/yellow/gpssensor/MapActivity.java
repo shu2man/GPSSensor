@@ -228,6 +228,9 @@ public class MapActivity extends AppCompatActivity {
         endTime=0;
         isNeedRealTimeDraw=true;
         //mLatestPoint();//实时更新、画出轨迹
+
+        //MTA跟踪
+        StatService.trackCustomKVEvent(this,"录制轨迹",null);
     }
     public void stopTrace(){
         mTraceClient.stopTrace(mTrace,mTraceListener);// 停止服务
@@ -390,14 +393,22 @@ public class MapActivity extends AppCompatActivity {
         HeatMode=!HeatMode;
         mBaiduMap.setBaiduHeatMapEnabled(HeatMode);
         ImageButton ibtn=(ImageButton)findViewById(R.id.heat_mode_btn);
-        if(HeatMode) ibtn.setBackgroundResource(R.drawable.heat_on);
+        if(HeatMode) {
+            ibtn.setBackgroundResource(R.drawable.heat_on);
+            //MTA跟踪
+            StatService.trackCustomKVEvent(this,"HeatMode",null);
+        }
         else ibtn.setBackgroundResource(R.drawable.heat_off);
     }
     public void trafficModeMap(View view){
         TrafficMode=!TrafficMode;
         mBaiduMap.setTrafficEnabled(TrafficMode);
         ImageButton ibtn=(ImageButton)findViewById(R.id.traffic_mode_btn);
-        if(TrafficMode) ibtn.setBackgroundResource(R.drawable.traffic_on);
+        if(TrafficMode) {
+            ibtn.setBackgroundResource(R.drawable.traffic_on);
+            //MTA跟踪
+            StatService.trackCustomKVEvent(this,"TrafficMode",null);
+        }
         else ibtn.setBackgroundResource(R.drawable.traffic_off);
     }
     public void satelliteModeMap(View view){
