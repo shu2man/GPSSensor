@@ -123,7 +123,8 @@ public class MapActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.INTERNET,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_PHONE_STATE
     };
 
     @Override
@@ -156,7 +157,7 @@ public class MapActivity extends AppCompatActivity {
 
     public void verifyPermission(Activity activity){
         try{
-            int permission= ActivityCompat.checkSelfPermission(activity,PERMISSION_LOCATION[3]);
+            int permission= ActivityCompat.checkSelfPermission(activity,PERMISSION_LOCATION[4]);
             if(permission!= PackageManager.PERMISSION_GRANTED){
                 ActivityCompat.requestPermissions(this,PERMISSION_LOCATION,1);
             }
@@ -618,9 +619,9 @@ public class MapActivity extends AppCompatActivity {
         TextView tv2=(TextView)findViewById(R.id.distance_trace_num_information);
         TextView tv3=(TextView)findViewById(R.id.time_trace_num_information);
         TextView tv4=(TextView)findViewById(R.id.average_speed_num);
-        DecimalFormat f=new DecimalFormat("##.0");
+        DecimalFormat f=new DecimalFormat("###.0");
         double avgs=distance/(System.currentTimeMillis()/1000-startTime);
-        tv1.setText(localCurrentSpeed+"");
+        tv1.setText(f.format(localCurrentSpeed));//localCurrentSpeed+""
         tv2.setText(f.format(distance));
         tv3.setText(getTimeHMSFormat(System.currentTimeMillis()/1000-startTime));
         tv4.setText(f.format(avgs));

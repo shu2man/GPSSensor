@@ -14,6 +14,8 @@ import android.widget.ProgressBar;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 import com.tencent.stat.MtaSDkException;
+import com.tencent.stat.StatConfig;
+import com.tencent.stat.StatReportStrategy;
 import com.tencent.stat.StatService;
 
 import cn.bmob.v3.Bmob;
@@ -98,6 +100,7 @@ public class welcome extends AppCompatActivity {
         try{
             StatService.startStatService(this,MTAappKey,MTAstatVersion);
             Log.d("MTA","MTA初始化成功");
+            StatConfig.setStatSendStrategy(StatReportStrategy.INSTANT);
         }catch (MtaSDkException e){
             Log.d("MTA","MTA初始化失败");
         }

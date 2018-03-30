@@ -30,6 +30,7 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
 import org.w3c.dom.Text;
 
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -178,10 +179,10 @@ public class login extends AppCompatActivity {
                 public void run() {
                     super.run();
                     try{
-                        Thread.sleep(3000);//休眠3秒
+                        //Thread.sleep(3000);//休眠3秒
                         //while(psdFromCloud==null) continue;//wait for search result
                         if(!psdFromCloud.equals("登录失败")){//c.moveToNext()
-                            if(psdFromCloud.equals(ps)){//c.getString(2)
+                            if(myMD5Verify(ps,psdFromCloud)){//c.getString(2)
                                 SharedPreferences.Editor editor=sharedPreferences.edit();
                                 editor.putBoolean("isFirstLaunch",false);
                                 editor.putString("Password",ps);//et_new.getText().toString()
@@ -245,7 +246,7 @@ public class login extends AppCompatActivity {
     public void addUserToCloud(String name,String psd){
         user u=new user();
         u.setName(name);
-        u.setPsd(psd);
+        u.setPsd(myMD5Encrypt(psd));
         DataShare ds=((DataShare)getApplicationContext());
         ds.setUsername(name);
         u.save(new SaveListener<String>() {
@@ -349,6 +350,41 @@ public class login extends AppCompatActivity {
             return sign;
         }
 
+    }
+
+    public String myMD5Encrypt(String psd){
+        //采用MD5对密码进行加密，bcrypt有点耗时耗电
+        char hexDigits[]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+        try{
+            byte[] btInput=psd.getBytes();
+            // 获得MD5摘要算法的 MessageDigest 对象
+            MessageDigest mdInstance=MessageDigest.getInstance("MD5");
+            //使用指定的字节更新摘要
+            mdInstance.update(btInput);
+            //获得密文
+            byte[] md=mdInstance.digest();
+            //把密文转换成十六进制的字符串形式
+            int len=md.length;
+            char str[]=new char[len*2];
+            int k=0;
+            for(int i=0;i<len;i++){
+                byte byte0=md[i];
+                str[k++]=hexDigits[byte0 >>> 4 & 0xf];
+                str[k++]=hexDigits[byte0 & 0xf];
+            }
+            return new String(str);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public boolean myMD5Verify(String psd,String code){
+        return myMD5Encrypt(psd).equals(code);
+    }
+
+    public String myBCrypt(String psd){
+
+        return null;
     }
 
 
