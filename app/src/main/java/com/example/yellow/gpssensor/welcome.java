@@ -104,6 +104,8 @@ public class welcome extends AppCompatActivity {
         }catch (MtaSDkException e){
             Log.d("MTA","MTA初始化失败");
         }
+
+
     }
 
     public void checkShouldRegister(){

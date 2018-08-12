@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.example.yellow.gpssensor"
         minSdkVersion 19
@@ -12,45 +12,15 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
-            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86'
         }
         manifestPlaceholders = [
             MTA_APPKEY:"ALL79L6B8QVH",
-            MTA_CHANNEL:"yingyongbao"
+            MTA_CHANNEL:"yingyongbao",
+            XG_ACCESS_ID:"2100283070",
+            XG_ACCESS_KEY:"AVE193UL36QA"
         ]
     }
-
-/*    ndk {
-        abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
-    }
-    manifestPlaceholders = [
-            MTA_APPKEY:"ALL79L6B8QVH",
-            MTA_CHANNEL:"Yingyongbao"
-    ]*/
-
-/*    productFlavors {
-        x86{
-            ndk{
-                abiFilter "x86"
-            }
-        }
-        mips {
-            ndk {
-                abiFilter "mips"
-            }
-        }
-        armv7 {
-            ndk {
-                abiFilter "armeabi-v7a"
-            }
-        }
-        arm {
-            ndk {
-                abiFilter "armeabi"
-            }
-        }
-        fat
-    }*/
 
     buildTypes {
         release {
@@ -99,7 +69,15 @@ dependencies {
     compile 'com.qq.mta:mta:3.4.0.1-beta'
     compile 'com.tencent.mid:mid:3.73-release'
     //mid jar包 必须添加
-    compile 'com.tencent.mid:mid:3.73-release'
+    //compile 'com.tencent.mid:mid:3.73-release'
+
+    //信鸽jar
+    compile 'com.tencent.xinge:xinge:3.2.2-release'
+    //wuo包
+    compile 'com.tencent.wup:wup:1.0.0.E-release'
+    //mid包
+    compile 'com.tencent.mid:mid:4.0.6-release'
+
 
 }
 
